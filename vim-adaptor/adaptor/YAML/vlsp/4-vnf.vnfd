@@ -1,0 +1,163 @@
+
+---
+##
+## Some general information regarding this
+## VNF descriptor.
+##
+descriptor_version: "vnfd-schema-01"
+vendor: "eu.sonata-nfv"
+name: "4-vnf"
+version: "0.1"
+author: "Steven Van Rossem, Ghent University, steven.vanrossem@intec.ugent.be"
+description: "A firewall based on Ryu Openflow controller + openvswitch (2 ports: input+output) in a single VNF"
+##
+## The virtual deployment unit.
+##
+virtual_deployment_units:
+  - id: "1"
+    vm_image: "sonata-vfw"
+    vm_image_format: "qcow2"
+    resource_requirements:
+      cpu:
+        vcpus: 1
+      memory:
+        size: 1
+        size_unit: "GB"
+      storage:
+        size: 1
+        size_unit: "GB"
+    connection_points:
+      - id: "eth0"
+        interface: "ipv4"
+        type: "management"
+      - id: "eth1"
+        interface: "ipv4"
+        type: "internal"
+      - id: "eth2"
+        interface: "ipv4"
+        type: "internal"
+      - id: "eth3"
+        interface: "ipv4"
+        type: "internal"
+  - id: "2"
+    vm_image: "sonata-vfw"
+    vm_image_format: "qcow2"
+    resource_requirements:
+      cpu:
+        vcpus: 1
+      memory:
+        size: 1
+        size_unit: "GB"
+      storage:
+        size: 1
+        size_unit: "GB"
+    connection_points:
+      - id: "eth0"
+        interface: "ipv4"
+        type: "management"
+      - id: "eth1"
+        interface: "ipv4"
+        type: "internal"
+      - id: "eth2"
+        interface: "ipv4"
+        type: "internal"
+      - id: "eth3"
+        interface: "ipv4"
+        type: "internal"
+  - id: "3"
+    vm_image: "sonata-vfw"
+    vm_image_format: "qcow2"
+    resource_requirements:
+      cpu:
+        vcpus: 1
+      memory:
+        size: 1
+        size_unit: "GB"
+      storage:
+        size: 1
+        size_unit: "GB"
+    connection_points:
+      - id: "eth0"
+        interface: "ipv4"
+        type: "management"
+      - id: "eth1"
+        interface: "ipv4"
+        type: "internal"
+      - id: "eth2"
+        interface: "ipv4"
+        type: "internal"
+  - id: "4"
+    vm_image: "sonata-vfw"
+    vm_image_format: "qcow2"
+    resource_requirements:
+      cpu:
+        vcpus: 1
+      memory:
+        size: 1
+        size_unit: "GB"
+      storage:
+        size: 1
+        size_unit: "GB"
+    connection_points:
+      - id: "eth0"
+        interface: "ipv4"
+        type: "management"
+      - id: "eth1"
+        interface: "ipv4"
+        type: "internal"
+      - id: "eth2"
+        interface: "ipv4"
+        type: "internal"
+
+##
+## The virtual links that interconnect
+## the different connections points.
+##
+virtual_links:
+  - id: "input"
+    connectivity_type: "E-Line"
+    connection_points_reference:
+      - "1:eth1"
+      - "input"
+  - id: "output"
+    connectivity_type: "E-Line"
+    connection_points_reference:
+      - "2:eth2"
+      - "output"
+  - id: "1to2"
+    connectivity_type: "E-Line"
+    connection_points_reference:
+      - "1:eth2"
+      - "2:eth1"
+  - id: "1to3"
+    connectivity_type: "E-Line"
+    connection_points_reference:
+      - "1:eth3"
+      - "3:eth1"
+  - id: "2to4"
+    connectivity_type: "E-Line"
+    connection_points_reference:
+      - "2:eth3"
+      - "4:eth1"
+  - id: "3to4"
+    connectivity_type: "E-Line"
+    connection_points_reference:
+      - "3:eth2"
+      - "4:eth2"
+
+##
+## The VNF connection points to the 
+## outside world.
+##
+connection_points:
+  - id: "mgmt"
+    interface: "ipv4"
+    type: "management"
+  - id: "input"
+    interface: "ipv4"
+    type: "internal"
+  - id: "output"
+    interface: "ipv4"
+    type: "internal"
+uuid: 6a15313f-cb0a-4540-baa2-77cc6b3f0004
+instance_uuid: 6a15313f-cb0a-4540-baa2-77cc6b3f0004

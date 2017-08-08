@@ -32,3 +32,4 @@ reports/
 
 *.patch
 
+/target/

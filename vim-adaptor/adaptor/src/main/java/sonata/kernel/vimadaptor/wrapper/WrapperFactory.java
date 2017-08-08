@@ -34,6 +34,7 @@ import sonata.kernel.vimadaptor.wrapper.openstack.OpenStackHeatWrapper;
 import sonata.kernel.vimadaptor.wrapper.ovsWrapper.OvsWrapper;
 import sonata.kernel.vimadaptor.wrapper.sp.ComputeSPWrapper;
 import sonata.kernel.vimadaptor.wrapper.sp.NetworkSPWrapper;
+import sonata.kernel.vimadaptor.wrapper.vlsp.VlspComputeWrapper;
 
 public class WrapperFactory {
 
@@ -78,6 +79,8 @@ public class WrapperFactory {
       output = new OpenStackHeatWrapper(config);
     } else if (config.getVimVendor().equals(ComputeVimVendor.SPVIM)){
       output = new ComputeSPWrapper(config);
+    } else if (config.getVimVendor().equals(ComputeVimVendor.VLSP)){
+      output = new VlspComputeWrapper(config);
     }
     // TODO Extends with all wrappers or refactor with a more OO type
     // generation
