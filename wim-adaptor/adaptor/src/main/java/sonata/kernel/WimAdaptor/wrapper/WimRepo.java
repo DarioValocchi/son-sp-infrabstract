@@ -608,7 +608,7 @@ public class WimRepo {
           + "VALUES (?, ?, ?);";
       stmt = connection.prepareStatement(sql);
       stmt.setString(1, vimUuid);
-      stmt.setString(1, vimAddress);
+      stmt.setString(2, vimAddress);
       stmt.setString(3, wimUuid);
       stmt.executeUpdate();
       connection.commit();
@@ -710,7 +710,7 @@ public class WimRepo {
       rs = stmt.executeQuery();
 
       while (rs.next()) {
-        output = rs.getString("VIM_UUID");
+        output = rs.getString("vim_address");
          
 
       }

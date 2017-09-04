@@ -46,6 +46,7 @@ import sonata.kernel.vimadaptor.commons.vnfd.VirtualDeploymentUnit;
 import sonata.kernel.vimadaptor.commons.vnfd.VnfDescriptor;
 import sonata.kernel.vimadaptor.wrapper.ComputeWrapper;
 import sonata.kernel.vimadaptor.wrapper.ResourceUtilisation;
+import sonata.kernel.vimadaptor.wrapper.WrapperBay;
 import sonata.kernel.vimadaptor.wrapper.WrapperConfiguration;
 import sonata.kernel.vimadaptor.wrapper.WrapperStatusUpdate;
 
@@ -83,8 +84,9 @@ public class ComputeMockWrapper extends ComputeWrapper {
   public void deployFunction(FunctionDeployPayload data, String sid) {
     double avgTime = 51987.21;
     double stdTime = 14907.12;
+    Logger.debug("[MockWrapper] deploying function...");
     waitGaussianTime(avgTime, stdTime);
-
+    Logger.debug("[MockWrapper] function deployed. Generating response...");
     VnfDescriptor vnf = data.getVnfd();
     VnfRecord vnfr = new VnfRecord();
     vnfr.setDescriptorVersion("vnfr-schema-01");
@@ -127,6 +129,10 @@ public class ComputeMockWrapper extends ComputeWrapper {
     } catch (JsonProcessingException e) {
       Logger.error(e.getMessage(), e);
     }
+    Logger.debug("[MockWrapper] Response generated. Writing record in the Infr. Repos...");
+    WrapperBay.getInstance().getVimRepo().writeFunctionInstanceEntry(vnf.getInstanceUuid(),
+      data.getServiceInstanceId(), this.getConfig().getUuid());
+    Logger.debug("[MockWrapper] All done!");
 
   }
 
@@ -185,6 +191,8 @@ public class ComputeMockWrapper extends ComputeWrapper {
     double avgTime = 10576.52;
     double stdTime = 1683.12;
     waitGaussianTime(avgTime, stdTime);
+    WrapperBay.getInstance().getVimRepo().writeServiceInstanceEntry(instanceId, instanceId,
+      instanceId, this.getConfig().getUuid());
     return true;
   }
 
