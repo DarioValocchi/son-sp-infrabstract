@@ -29,11 +29,11 @@ import sonata.kernel.vimadaptor.wrapper.vlsp.client.model.RouterData;
 
 public class VlspComputeWrapper extends ComputeWrapper {
 
-  
-  public VlspComputeWrapper(WrapperConfiguration config){
+
+  public VlspComputeWrapper(WrapperConfiguration config) {
     super(config);
   }
-  
+
   private static final org.slf4j.Logger Logger = LoggerFactory.getLogger(VlspComputeWrapper.class);
 
   @Override
@@ -101,7 +101,7 @@ public class VlspComputeWrapper extends ComputeWrapper {
           break;
         }
       }
-      Logger.debug("is it? "+isExtLink);
+      Logger.debug("is it? " + isExtLink);
       if (isExtLink) continue;
       int numberOfVdus = link.getConnectionPointsReference().size();
       if (link.getConnectivityType().equals(ConnectivityType.E_LINE)) {
@@ -112,7 +112,7 @@ public class VlspComputeWrapper extends ComputeWrapper {
 
         String vdu1 = cp1.split(":")[0];
         String vdu2 = cp2.split(":")[0];
-        Logger.debug("Deploying an E_LINE link between "+vdu1+" and "+vdu2);
+        Logger.debug("Deploying an E_LINE link between " + vdu1 + " and " + vdu2);
 
         RouterData router1 = vduToRouterDataMap.get(vdu1);
         RouterData router2 = vduToRouterDataMap.get(vdu2);
@@ -171,7 +171,8 @@ public class VlspComputeWrapper extends ComputeWrapper {
               Logger.error(
                   "VLSP wrapper - Exception rised by REST client for protocol error while creating link.");
               this.setChanged();
-              WrapperStatusUpdate errorUpdate = new WrapperStatusUpdate(sid, "ERROR", e.getMessage());
+              WrapperStatusUpdate errorUpdate =
+                  new WrapperStatusUpdate(sid, "ERROR", e.getMessage());
               this.notifyObservers(errorUpdate);
               return;
             } catch (IOException e) {
@@ -179,14 +180,13 @@ public class VlspComputeWrapper extends ComputeWrapper {
               Logger.error(
                   "VLSP wrapper - Exception rised by REST client for I/O error while creating link.");
               this.setChanged();
-              WrapperStatusUpdate errorUpdate = new WrapperStatusUpdate(sid, "ERROR", e.getMessage());
+              WrapperStatusUpdate errorUpdate =
+                  new WrapperStatusUpdate(sid, "ERROR", e.getMessage());
               this.notifyObservers(errorUpdate);
               return;
             }
           }
         }
-
-
       }
     }
 

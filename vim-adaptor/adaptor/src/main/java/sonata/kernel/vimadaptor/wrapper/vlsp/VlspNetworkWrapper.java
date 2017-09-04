@@ -132,8 +132,6 @@ public class VlspNetworkWrapper extends NetworkWrapper {
         }
       }
     }
-
-
     // Enforce SFC path
     ArrayList<ForwardingGraph> graphs = nsd.getForwardingGraphs();
     for (ForwardingGraph graph : graphs) {
