@@ -4,6 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class RouterData {
 
+  
+
+  private int[] linkIDs;
+  private int[] links;
   private int routerID;
   private String address;
   private String name;
@@ -85,6 +89,22 @@ public class RouterData {
 
   public void setOpTime(long opTime) {
     this.opTime = opTime;
+  }
+
+  public int[] getLinkIDs() {
+    return linkIDs;
+  }
+
+  public int[] getLinks() {
+    return links;
+  }
+
+  public void setLinkIDs(int[] linkIDs) {
+    this.linkIDs = linkIDs;
+  }
+
+  public void setLinks(int[] links) {
+    this.links = links;
   }
 
 

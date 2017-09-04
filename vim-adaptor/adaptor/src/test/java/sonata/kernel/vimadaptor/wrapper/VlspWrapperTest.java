@@ -3,25 +3,34 @@ package sonata.kernel.vimadaptor.wrapper;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.UUID;
 
+import org.apache.http.client.ClientProtocolException;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import sonata.kernel.vimadaptor.commons.FunctionDeployPayload;
+import sonata.kernel.vimadaptor.commons.NetworkConfigurePayload;
 import sonata.kernel.vimadaptor.commons.ServiceDeployPayload;
 import sonata.kernel.vimadaptor.commons.SonataManifestMapper;
 import sonata.kernel.vimadaptor.commons.nsd.ServiceDescriptor;
 import sonata.kernel.vimadaptor.commons.vnfd.VnfDescriptor;
 import sonata.kernel.vimadaptor.wrapper.vlsp.VlspComputeWrapper;
+import sonata.kernel.vimadaptor.wrapper.vlsp.VlspNetworkWrapper;
+import sonata.kernel.vimadaptor.wrapper.vlsp.client.VlspGcClient;
+import sonata.kernel.vimadaptor.wrapper.vlsp.client.model.RouterData;
 
 public class VlspWrapperTest {
 
   VlspComputeWrapper computeWrapper;
+  VlspNetworkWrapper networkWrapper;
   private ServiceDeployPayload data;
   private ObjectMapper mapper;
 
@@ -96,6 +105,17 @@ public class VlspWrapperTest {
     config.setConfiguration("{\"GC_port\":8888}");
     computeWrapper = (VlspComputeWrapper) WrapperFactory.createWrapper(config);
     
+    WrapperConfiguration netConfig = new WrapperConfiguration();
+    netConfig.setName("VlspTestNet");
+    netConfig.setVimVendor(NetworkVimVendor.VLSP);
+    netConfig.setWrapperType(WrapperType.NETWORK);
+    netConfig.setCountry("Italy");
+    netConfig.setCity("Cropani");
+    netConfig.setUuid(UUID.randomUUID().toString());
+    netConfig.setVimEndpoint("localhost");
+    netConfig.setConfiguration("{\"GC_port\":8888}");
+    networkWrapper = (VlspNetworkWrapper) WrapperFactory.createWrapper(netConfig);
+    
   }
 
   @Test
@@ -103,7 +123,7 @@ public class VlspWrapperTest {
     
     for (VnfDescriptor vnfd : data.getVnfdList()) {
       FunctionDeployPayload payload = new FunctionDeployPayload();
-      payload.setServiceInstanceId(UUID.randomUUID().toString());
+      payload.setServiceInstanceId(data.getNsd().getInstanceUuid());
       payload.setVimUuid(computeWrapper.getConfig().getUuid());
       payload.setVnfd(vnfd);
       System.out.println("Deploying function: "+vnfd.getName());
@@ -111,6 +131,16 @@ public class VlspWrapperTest {
     }
   }
 
+  @Test
+  public void testConfigureChain() throws Exception{
+    
+    NetworkConfigurePayload payload = new NetworkConfigurePayload();
+    payload.setVnfds(data.getVnfdList());
+    payload.setServiceInstanceId(data.getNsd().getInstanceUuid());
+    networkWrapper.configureNetworking(payload);
+    
+    
+  }
 
 
 }

@@ -35,6 +35,7 @@ import sonata.kernel.vimadaptor.wrapper.ovsWrapper.OvsWrapper;
 import sonata.kernel.vimadaptor.wrapper.sp.ComputeSPWrapper;
 import sonata.kernel.vimadaptor.wrapper.sp.NetworkSPWrapper;
 import sonata.kernel.vimadaptor.wrapper.vlsp.VlspComputeWrapper;
+import sonata.kernel.vimadaptor.wrapper.vlsp.VlspNetworkWrapper;
 
 public class WrapperFactory {
 
@@ -90,12 +91,15 @@ public class WrapperFactory {
 
   private static NetworkWrapper createNetworkWrapper(WrapperConfiguration config) {
     NetworkWrapper output = null;
+    Logger.debug("Factory creating network wrapper for vendor: "+config.getVimVendor().toString());
     if (config.getVimVendor().equals(NetworkVimVendor.OVS)) {
       output = new OvsWrapper(config);
     } else if (config.getVimVendor().equals(NetworkVimVendor.NETWORKMOCK)) {
       output = new NetworkMockWrapper(config);
     } else if (config.getVimVendor().equals(NetworkVimVendor.SPVIM)){
       output = new NetworkSPWrapper(config);
+    } else if (config.getVimVendor().equals(NetworkVimVendor.VLSP)){
+      output = new VlspNetworkWrapper(config);
     }
     return output;
   }

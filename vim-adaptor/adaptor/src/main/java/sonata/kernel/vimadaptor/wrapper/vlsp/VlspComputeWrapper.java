@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
-import java.util.UUID;
 
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONObject;

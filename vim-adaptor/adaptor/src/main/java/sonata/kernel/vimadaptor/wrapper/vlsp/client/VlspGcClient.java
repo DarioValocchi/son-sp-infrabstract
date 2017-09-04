@@ -1,10 +1,13 @@
 package sonata.kernel.vimadaptor.wrapper.vlsp.client;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.LoggerFactory;
@@ -14,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import sonata.kernel.vimadaptor.wrapper.vlsp.client.model.AppData;
 import sonata.kernel.vimadaptor.wrapper.vlsp.client.model.LinkData;
 import sonata.kernel.vimadaptor.wrapper.vlsp.client.model.RouterData;
+import sonata.kernel.vimadaptor.wrapper.vlsp.client.model.RouterList;
 
 public class VlspGcClient {
 
@@ -27,6 +31,65 @@ public class VlspGcClient {
     this.port = port;
   }
 
+  public RouterData getRouter(int id) throws ClientProtocolException, IOException{
+    HttpClient httpClient = HttpClientBuilder.create().build();
+    HttpGet get;
+    HttpResponse response = null;
+
+    StringBuilder buildUrl = new StringBuilder();
+    buildUrl.append("http://");
+    buildUrl.append(this.host);
+    buildUrl.append(":");
+    buildUrl.append(this.port);
+    buildUrl.append("/router");
+    buildUrl.append("/"+id);
+
+    get = new HttpGet(buildUrl.toString());
+    
+    response = httpClient.execute(get);
+
+    Logger.debug("[VlspGcCLient] Router list response:");
+    Logger.debug(response.toString());
+
+    ObjectMapper mapper = new ObjectMapper();
+
+
+    RouterData router=
+        mapper.readValue(VlspClientUtils.convertHttpResponseToString(response), RouterData.class);
+    
+    return router;
+
+  }
+  
+  public int[] listRouters() throws ClientProtocolException, IOException{
+    HttpClient httpClient = HttpClientBuilder.create().build();
+    HttpGet get;
+    HttpResponse response = null;
+
+    StringBuilder buildUrl = new StringBuilder();
+    buildUrl.append("http://");
+    buildUrl.append(this.host);
+    buildUrl.append(":");
+    buildUrl.append(this.port);
+    buildUrl.append("/router/");
+
+    get = new HttpGet(buildUrl.toString());
+    
+    response = httpClient.execute(get);
+
+    Logger.debug("[VlspGcCLient] Router list response:");
+    Logger.debug(response.toString());
+
+    ObjectMapper mapper = new ObjectMapper();
+
+
+    RouterList routers=
+        mapper.readValue(VlspClientUtils.convertHttpResponseToString(response), RouterList.class);
+        
+    return routers.getList();
+    
+  }
+  
   public RouterData addRouter(String name, Integer address)
       throws ClientProtocolException, IOException {
 
