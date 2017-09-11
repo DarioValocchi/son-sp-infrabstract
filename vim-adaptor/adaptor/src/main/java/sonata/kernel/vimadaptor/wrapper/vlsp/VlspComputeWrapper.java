@@ -28,6 +28,8 @@ import sonata.kernel.vimadaptor.commons.VnfRecord;
 import sonata.kernel.vimadaptor.commons.VnfcInstance;
 import sonata.kernel.vimadaptor.commons.nsd.ConnectionPoint;
 import sonata.kernel.vimadaptor.commons.nsd.ConnectionPointRecord;
+import sonata.kernel.vimadaptor.commons.nsd.ConnectionPointType;
+import sonata.kernel.vimadaptor.commons.nsd.InterfaceRecord;
 import sonata.kernel.vimadaptor.commons.nsd.VirtualLink.ConnectivityType;
 import sonata.kernel.vimadaptor.commons.vnfd.VirtualDeploymentUnit;
 import sonata.kernel.vimadaptor.commons.vnfd.VnfDescriptor;
@@ -197,9 +199,9 @@ public class VlspComputeWrapper extends ComputeWrapper {
               this.notifyObservers(errorUpdate);
               return;
             }
-            
-            
-            
+
+
+
           }
         }
       }
@@ -234,22 +236,33 @@ public class VlspComputeWrapper extends ComputeWrapper {
       vdur.setVduReference(vnfd.getName() + ":" + vdu.getId());
       vdur.setVmImage(vdu.getVmImage());
       vdurTable.put(vdur.getVduReference(), vdur);
-      vnfr.addVdu(vdur); 
+      vnfr.addVdu(vdur);
       VnfcInstance vnfc = new VnfcInstance();
       vnfc.setId("0");
       vnfc.setVimId(data.getVimUuid());
-      vnfc.setVcId(""+vduToRouterDataMap.get(vdu.getId()).getRouterID());
-      
+      vnfc.setVcId("" + vduToRouterDataMap.get(vdu.getId()).getRouterID());
+
       ArrayList<ConnectionPointRecord> cpRecords = new ArrayList<ConnectionPointRecord>();
       for (ConnectionPoint cp : vdu.getConnectionPoints()) {
         ConnectionPointRecord cpr = new ConnectionPointRecord();
         cpr.setId(cp.getId());
         cpRecords.add(cpr);
+        InterfaceRecord ir = new InterfaceRecord();
+        String portAddress;
+        if (cp.getType().equals(ConnectionPointType.MANAGEMENT)) {
+          portAddress = ""+ vduToRouterDataMap.get(vdu.getId()).getMgmtPort();
+        } else {
+          portAddress = vduToRouterDataMap.get(vdu.getId()).getR2rPort();
+        }
+        ir.setAddress(portAddress);
+        ir.setHardwareAddress("null");
+        ir.setNetmask("255.255.255.255");
+        cpr.setInterface(ir);
       }
       vnfc.setConnectionPoints(cpRecords);
       vdur.addVnfcInstance(vnfc);
     }
-    
+
     response.setVnfr(vnfr);
     String body = null;
     ObjectMapper omapper = new ObjectMapper(new YAMLFactory());
@@ -301,7 +314,7 @@ public class VlspComputeWrapper extends ComputeWrapper {
 
   @Override
   public boolean prepareService(String instanceId) throws Exception {
-    
+
     Logger.debug("Preparing VLSP PoP for service deployment...");
     String host = this.getConfig().getVimEndpoint();
     String config = this.getConfig().getConfiguration();
@@ -313,9 +326,9 @@ public class VlspComputeWrapper extends ComputeWrapper {
     }
     int port = object.getInt("GC_port");
     VlspGcClient client = new VlspGcClient(host, port);
-    
-    String inName = instanceId + "_ingress" ;
-    String outName = instanceId + "_egress" ;
+
+    String inName = instanceId + "_ingress";
+    String outName = instanceId + "_egress";
     int address = new Random().nextInt();
     RouterData routerData;
     try {
@@ -336,8 +349,9 @@ public class VlspComputeWrapper extends ComputeWrapper {
           "VLSP wrapper - Exception rised by REST client for I/O error while creating router.");
       return false;
     }
-    
-    WrapperBay.getInstance().getVimRepo().writeServiceInstanceEntry(instanceId, instanceId, instanceId, this.getConfig().getUuid());
+
+    WrapperBay.getInstance().getVimRepo().writeServiceInstanceEntry(instanceId, instanceId,
+        instanceId, this.getConfig().getUuid());
     return true;
   }
 
