@@ -336,6 +336,8 @@ public class VlspComputeWrapper extends ComputeWrapper {
           "VLSP wrapper - Exception rised by REST client for I/O error while creating router.");
       return false;
     }
+    
+    WrapperBay.getInstance().getVimRepo().writeServiceInstanceEntry(instanceId, instanceId, instanceId, this.getConfig().getUuid());
     return true;
   }
 
