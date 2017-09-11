@@ -87,7 +87,7 @@ public class VlspWrapperTest {
 
 
     this.data = new ServiceDeployPayload();
-    sd.setInstanceUuid(sd.getInstanceUuid() + "IASFCTEST");
+    sd.setInstanceUuid(sd.getInstanceUuid() + "IAVLPSTEST");
     data.setServiceDescriptor(sd);
     data.addVnfDescriptor(vnfd1);
     data.addVnfDescriptor(vnfd2);

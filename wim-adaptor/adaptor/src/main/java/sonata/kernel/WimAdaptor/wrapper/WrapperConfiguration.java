@@ -38,6 +38,7 @@ public class WrapperConfiguration {
   private String authKey;
   private String name;
   private String uuid;
+  private String configuration;
   private ArrayList<String> attachedVims;
 
   public String getWrapperType() {
@@ -126,5 +127,14 @@ public class WrapperConfiguration {
   public void setName(String name) {
     this.name = name;
   }
+
+  public String getConfiguration() {
+    return configuration;
+  }
+
+  public void setConfiguration(String configuration) {
+    this.configuration = configuration;
+  }
+
 
 }
