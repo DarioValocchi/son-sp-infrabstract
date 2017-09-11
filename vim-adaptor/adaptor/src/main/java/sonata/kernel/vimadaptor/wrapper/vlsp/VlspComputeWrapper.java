@@ -285,8 +285,12 @@ public class VlspComputeWrapper extends ComputeWrapper {
 
   @Override
   public ResourceUtilisation getResourceUtilisation() {
-    // TODO Auto-generated method stub
-    return null;
+    ResourceUtilisation output = new ResourceUtilisation();
+    output.setTotCores(10);
+    output.setUsedCores(0);
+    output.setTotMemory(10);
+    output.setUsedCores(0);
+    return output;
   }
 
   @Override
