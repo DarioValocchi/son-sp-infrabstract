@@ -255,7 +255,7 @@ public class VlspComputeWrapper extends ComputeWrapper {
           portAddress = vduToRouterDataMap.get(vdu.getId()).getR2rPort();
         }
         ir.setAddress(portAddress);
-        ir.setHardwareAddress("null");
+        ir.setHardwareAddress("00:03:FF:01:01:01");
         ir.setNetmask("255.255.255.255");
         cpr.setInterface(ir);
       }
