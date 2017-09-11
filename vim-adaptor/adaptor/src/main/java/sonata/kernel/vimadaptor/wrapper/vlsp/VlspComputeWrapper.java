@@ -258,6 +258,7 @@ public class VlspComputeWrapper extends ComputeWrapper {
         ir.setHardwareAddress("00:03:FF:01:01:01");
         ir.setNetmask("255.255.255.255");
         cpr.setInterface(ir);
+        cpr.setType(cp.getType());
       }
       vnfc.setConnectionPoints(cpRecords);
       vdur.addVnfcInstance(vnfc);
