@@ -262,6 +262,7 @@ public class VlspComputeWrapper extends ComputeWrapper {
       }
       vnfc.setConnectionPoints(cpRecords);
       vdur.addVnfcInstance(vnfc);
+      vdur.setResourceRequirements(vdu.getResourceRequirements());
     }
 
     response.setVnfr(vnfr);
