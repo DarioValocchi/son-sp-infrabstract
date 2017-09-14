@@ -98,7 +98,7 @@ public class VlspNetworkWrapper extends NetworkWrapper {
       } else if (vl.getConnectivityType().equals(ConnectivityType.E_LINE)) {
 
         String[] linkEnds = new String[2];
-
+        
         if (vl.getConnectionPointsReference().contains("in")) {
           linkEnds[0] = data.getServiceInstanceId() + "_ingress";
         } else if (vl.getConnectionPointsReference().contains("out")) {
@@ -107,6 +107,7 @@ public class VlspNetworkWrapper extends NetworkWrapper {
           int i = 0;
           for (String cpRef : vl.getConnectionPointsReference()) {
             // Process the cp reference
+            Logger.debug("Processing vnf CP" + cpRef);
             String[] split = cpRef.split(":");
             String vnfId = split[0];
             String cpName = split[1];
@@ -119,14 +120,14 @@ public class VlspNetworkWrapper extends NetworkWrapper {
             }
             VnfDescriptor vnf = vnfTrio2VnfdMap.get(vnfTrio);
             // find VL connecting VNF_CP
-
             for (VnfVirtualLink vnfVl : vnf.getVirtualLinks()) {
               if (vnfVl.getConnectionPointsReference().contains(cpName)) {
                 // This must be an E_LINE with just two CPs.
+                Logger.debug("Virtual link found:" + vnfVl.getId());
                 int indexOfVnfCp = vnfVl.getConnectionPointsReference().indexOf(cpName);
                 int indexOfVduCp = (indexOfVnfCp + 1) % 2;
                 String vlEnd = vl.getConnectionPointsReference().get(indexOfVduCp);
-
+                Logger.debug("Vl end found: " + vlEnd);
                 split = vlEnd.split(":");
                 String vduId = split[0];
                 linkEnds[i] = vnf.getName() + "_" + vduId;
