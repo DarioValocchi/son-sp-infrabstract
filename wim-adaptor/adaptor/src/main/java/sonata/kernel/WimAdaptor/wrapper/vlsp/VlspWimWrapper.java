@@ -12,6 +12,7 @@ import sonata.kernel.WimAdaptor.wrapper.WimWrapper;
 import sonata.kernel.WimAdaptor.wrapper.WrapperConfiguration;
 import sonata.kernel.WimAdaptor.wrapper.WrapperStatusUpdate;
 import sonata.kernel.Wimadaptor.wrapper.vlsp.client.VlspGcClient;
+import sonata.kernel.Wimadaptor.wrapper.vlsp.client.model.AppRequestData;
 import sonata.kernel.Wimadaptor.wrapper.vlsp.client.model.RouterData;
 
 public class VlspWimWrapper extends WimWrapper {
@@ -96,8 +97,10 @@ public class VlspWimWrapper extends WimWrapper {
       
       
       
-      client.deployApp(routerOutId, "demo_usr.paths.Egress", outArgs);
-      client.deployApp(routerInId, "demo_usr.paths.Ingress", inArgs);
+      AppRequestData appDataOut = client.deployApp(routerOutId, "demo_usr.paths.Egress", outArgs);
+      AppRequestData appDataIn = client.deployApp(routerInId, "demo_usr.paths.Ingress", inArgs);
+      
+      return appDataIn.isSuccess()&&appDataOut.isSuccess();
       
     } catch (
 
@@ -112,9 +115,9 @@ public class VlspWimWrapper extends WimWrapper {
           "VLSP WIM wrapper - Exception rised by REST client for I/O error while creating link.");
       return false;
     }
-
-
-    return true;
+    
+    
+    
   }
 
   @Override

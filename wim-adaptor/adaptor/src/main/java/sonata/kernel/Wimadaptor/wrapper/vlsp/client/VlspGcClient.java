@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import sonata.kernel.Wimadaptor.wrapper.vlsp.client.model.AppData;
+import sonata.kernel.Wimadaptor.wrapper.vlsp.client.model.AppRequestData;
 import sonata.kernel.Wimadaptor.wrapper.vlsp.client.model.LinkData;
 import sonata.kernel.Wimadaptor.wrapper.vlsp.client.model.RouterData;
 import sonata.kernel.Wimadaptor.wrapper.vlsp.client.model.RouterList;
@@ -162,7 +162,7 @@ public class VlspGcClient {
   }
 
 
-  public AppData deployApp(Integer routerId, String appClassPath, String[] args)
+  public AppRequestData deployApp(Integer routerId, String appClassPath, String[] args)
       throws ClientProtocolException, IOException {
 
     HttpClient httpClient = HttpClientBuilder.create().build();
@@ -195,8 +195,8 @@ public class VlspGcClient {
 
     ObjectMapper mapper = new ObjectMapper();
 
-    AppData output =
-        mapper.readValue(VlspClientUtils.convertHttpResponseToString(response), AppData.class);
+    AppRequestData output =
+        mapper.readValue(VlspClientUtils.convertHttpResponseToString(response), AppRequestData.class);
     return output;
   }
 
