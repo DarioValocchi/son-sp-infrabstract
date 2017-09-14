@@ -179,8 +179,8 @@ public class ConfigureNetworkCallProcessor extends AbstractCallProcessor {
         }
 
 
-        // Logger.debug("subgraph data structure:");
-        // Logger.debug(netVim2SubGraphMap.toString());
+        Logger.debug("subgraph data structure:");
+        Logger.debug(netVim2SubGraphMap.toString());
 
         for (String netVimUuid : netVim2SubGraphMap.keySet()) {
           ArrayList<VnfDescriptor> descriptorsSublist = new ArrayList<VnfDescriptor>();

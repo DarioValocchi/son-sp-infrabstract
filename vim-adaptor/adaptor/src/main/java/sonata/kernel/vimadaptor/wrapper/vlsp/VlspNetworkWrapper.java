@@ -91,7 +91,7 @@ public class VlspNetworkWrapper extends NetworkWrapper {
     for (VnfDescriptor vnf : vnfds) {
       vnfTrio2VnfdMap.put(vnf.getVendor() + ":" + vnf.getName() + ":" + vnf.getVersion(), vnf);
     }
-
+    
     for (VirtualLink vl : nsd.getVirtualLinks()) {
       if (vl.getConnectivityType().equals(ConnectivityType.E_LAN)) {
         // TODO

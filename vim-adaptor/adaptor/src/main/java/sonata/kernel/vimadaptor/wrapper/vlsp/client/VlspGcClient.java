@@ -48,8 +48,8 @@ public class VlspGcClient {
     
     response = httpClient.execute(get);
 
-    Logger.debug("[VlspGcCLient] Router list response:");
-    Logger.debug(response.toString());
+    // Logger.debug("[VlspGcCLient] Router list response:");
+    // Logger.debug(response.toString());
 
     ObjectMapper mapper = new ObjectMapper();
 
@@ -77,8 +77,8 @@ public class VlspGcClient {
     
     response = httpClient.execute(get);
 
-    Logger.debug("[VlspGcCLient] Router list response:");
-    Logger.debug(response.toString());
+    // Logger.debug("[VlspGcCLient] Router list response:");
+    // Logger.debug(response.toString());
 
     ObjectMapper mapper = new ObjectMapper();
 
@@ -108,13 +108,13 @@ public class VlspGcClient {
 
     post = new HttpPost(buildUrl.toString());
 
-    Logger.debug("[VlspGcCLient] Creating router...");
-    Logger.debug("[VlspGcCLient] " + post.toString());
+    // Logger.debug("[VlspGcCLient] Creating router...");
+    // Logger.debug("[VlspGcCLient] " + post.toString());
 
     response = httpClient.execute(post);
 
-    Logger.debug("[VlspGcCLient] Router creation response:");
-    Logger.debug(response.toString());
+    // Logger.debug("[VlspGcCLient] Router creation response:");
+    // Logger.debug(response.toString());
 
     ObjectMapper mapper = new ObjectMapper();
 
@@ -145,13 +145,13 @@ public class VlspGcClient {
 
     post = new HttpPost(buildUrl.toString());
 
-    Logger.debug("[VlspGcCLient] Creating link...");
-    Logger.debug("[VlspGcCLient] " + post.toString());
+    // Logger.debug("[VlspGcCLient] Creating link...");
+    // Logger.debug("[VlspGcCLient] " + post.toString());
 
     response = httpClient.execute(post);
 
-    Logger.debug("[VlspGcCLient] Link creation response:");
-    Logger.debug(response.toString());
+    // Logger.debug("[VlspGcCLient] Link creation response:");
+    // Logger.debug(response.toString());
 
     ObjectMapper mapper = new ObjectMapper();
 
@@ -185,12 +185,12 @@ public class VlspGcClient {
 
     post = new HttpPost(buildUrl.toString());
 
-    Logger.debug("[VlspGcCLient] Creating link...");
+    Logger.debug("[VlspGcCLient] Creating app...");
     Logger.debug("[VlspGcCLient] " + post.toString());
 
     response = httpClient.execute(post);
 
-    Logger.debug("[VlspGcCLient] Link creation response:");
+    Logger.debug("[VlspGcCLient] app creation response:");
     Logger.debug(response.toString());
 
     ObjectMapper mapper = new ObjectMapper();
