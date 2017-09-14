@@ -180,7 +180,7 @@ public class VlspGcClient {
     buildUrl.append("/?className=" + appClassPath);
     buildUrl.append("&args=");
     for (int i = 0; i < args.length - 1; i++)
-      buildUrl.append(args[i] + "%20");
+      buildUrl.append(args[i] + "+");
     buildUrl.append(args[args.length - 1]);
 
     post = new HttpPost(buildUrl.toString());

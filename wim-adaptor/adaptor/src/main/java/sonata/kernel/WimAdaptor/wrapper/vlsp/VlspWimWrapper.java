@@ -26,7 +26,7 @@ public class VlspWimWrapper extends WimWrapper {
   public boolean configureNetwork(String instanceId, String inputSegment, String outputSegment,
       String[] segmentList) {
 
-    Logger.debug("Configuring SFC in VLSP...");
+    Logger.debug("Configuring WAN SFC in VLSP...");
     String host = this.getConfig().getWimEndpoint();
     String config = this.getConfig().getConfiguration();
 //    JSONTokener mapper = new JSONTokener(config);
@@ -45,8 +45,8 @@ public class VlspWimWrapper extends WimWrapper {
 
     String routerInName = instanceId + "_ingress";
     String routerOutName = instanceId + "_egress";
-    int routerInId = -1;
-    int routerOutId = -1;
+    int routerInId = Integer.MIN_VALUE;
+    int routerOutId = Integer.MIN_VALUE;
     try {
       int[] routerIds = client.listRouters();
 
@@ -62,7 +62,7 @@ public class VlspWimWrapper extends WimWrapper {
         }
       }
 
-      if (routerInId < 0 || routerOutId < 0) {
+      if (routerInId == Integer.MIN_VALUE || routerOutId == Integer.MIN_VALUE) {
         Logger.error("VLSP WIM wrapper - Cannot retrieve router ID of ingress/egress routers.");
         return false;
       }
@@ -80,7 +80,7 @@ public class VlspWimWrapper extends WimWrapper {
       outArgs[1] = outputSegment+":8856";
       outArgs[2] = "-v";
 
-      client.deployApp(routerInId, "demo_usr.paths.Egress", inArgs);
+      client.deployApp(routerInId, "demo_usr.paths.Ingress", inArgs);
       client.deployApp(routerOutId, "demo_usr.paths.Egress", outArgs);
 
     } catch (
