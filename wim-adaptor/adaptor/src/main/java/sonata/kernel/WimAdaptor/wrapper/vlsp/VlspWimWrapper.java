@@ -29,19 +29,8 @@ public class VlspWimWrapper extends WimWrapper {
     Logger.debug("Configuring SFC in VLSP...");
     String host = this.getConfig().getWimEndpoint();
     String config = this.getConfig().getConfiguration();
-    JSONTokener mapper = new JSONTokener(config);
-    JSONObject object = (JSONObject) mapper.nextValue();
-    if (!object.has("GC_port")) {
-      Logger.error("VLSP wrapper - Unable get GC port from VIM configuration");
-      this.setChanged();
-      WrapperStatusUpdate errorUpdate = new WrapperStatusUpdate(null, "ERROR",
-          "VLSP wrapper - Unable get GC port from VIM configuration");
-      this.notifyObservers(errorUpdate);
-      return false;
-    }
-    int port = object.getInt("GC_port");
 
-    VlspGcClient client = new VlspGcClient(host, port);
+    VlspGcClient client = new VlspGcClient(host, 8888);
 
     String routerInName = instanceId + "_ingress";
     String routerOutName = instanceId + "_egress";
