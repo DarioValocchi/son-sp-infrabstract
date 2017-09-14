@@ -41,6 +41,21 @@ public class VlspWimWrapper extends WimWrapper {
 //    }
 //    int port = object.getInt("GC_port");
 
+    if(!(inputSegment.contains(":")&&outputSegment.contains(":"))){
+      Logger.error(
+          "VLSP WIM wrapper - Egress and Ingress NAP are not compliant with VLSP wrapper");
+      return false;
+    }
+    
+    String[] inSplit = inputSegment.split(":");
+    String[] outSplit = outputSegment.split(":");
+    
+    String inHost=inSplit[0];
+    String inPort=inSplit[1];
+
+    String outHost=outSplit[0];
+    String outPort=outSplit[1];
+
     VlspGcClient client = new VlspGcClient(host, 8888);
 
     String routerInName = instanceId + "_ingress";
@@ -66,23 +81,24 @@ public class VlspWimWrapper extends WimWrapper {
         Logger.error("VLSP WIM wrapper - Cannot retrieve router ID of ingress/egress routers.");
         return false;
       }
-      String[] inArgs = new String[5];
-      inArgs[0] = "4000";
-      inArgs[1] = inputSegment+":8856";
-      inArgs[2] = "-v";
-      inArgs[3] = "-b";
-      inArgs[4] = "64";
-      
-      
       
       String[] outArgs = new String[3];
-      outArgs[0] = "4000";
-      outArgs[1] = outputSegment+":8856";
+      outArgs[0] = "4500";
+      outArgs[1] = outHost+":"+outPort;
       outArgs[2] = "-v";
-
-      client.deployApp(routerInId, "demo_usr.paths.Ingress", inArgs);
+      
+      
+      String[] inArgs = new String[3];
+      inArgs[0] = inPort;
+      inArgs[1] = routerOutId+":4500";
+      inArgs[2] = "-v";
+      
+      
+      
+      
       client.deployApp(routerOutId, "demo_usr.paths.Egress", outArgs);
-
+      client.deployApp(routerInId, "demo_usr.paths.Ingress", inArgs);
+      
     } catch (
 
     ClientProtocolException e) {
