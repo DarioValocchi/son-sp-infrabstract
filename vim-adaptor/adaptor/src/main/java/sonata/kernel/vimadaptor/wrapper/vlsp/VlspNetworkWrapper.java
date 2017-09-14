@@ -126,7 +126,7 @@ public class VlspNetworkWrapper extends NetworkWrapper {
                 Logger.debug("Virtual link found:" + vnfVl.getId());
                 int indexOfVnfCp = vnfVl.getConnectionPointsReference().indexOf(cpName);
                 int indexOfVduCp = (indexOfVnfCp + 1) % 2;
-                String vlEnd = vl.getConnectionPointsReference().get(indexOfVduCp);
+                String vlEnd = vnfVl.getConnectionPointsReference().get(indexOfVduCp);
                 Logger.debug("Vl end found: " + vlEnd);
                 split = vlEnd.split(":");
                 String vduId = split[0];
