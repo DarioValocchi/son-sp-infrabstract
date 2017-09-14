@@ -139,6 +139,15 @@ public class ConfigureWimCallProcessor extends AbstractCallProcessor {
         addressesArray = addressOfVims.toArray(addressesArray);
         wim.configureNetwork(instanceId, null, null, addressesArray);
       }
+    } else if ((request.getNap().getIngresses() == null || request.getNap().getEgresses() == null)
+        || (request.getNap().getIngresses().isEmpty()
+            || request.getNap().getEgresses().isEmpty())) {
+      Logger.error("Error in wan configuration call: NAPs are present, but list is empty");
+      this.sendToMux(new ServicePlatformMessage(
+          "{\"request_status\":\"FAILED\",\"message\":\"Error in wan configuration call: NAPs are present, but list is empty\"}",
+          "application/json", message.getReplyTo(), message.getSid(), null));
+      out = false;
+      return out;
     } else {
       for (NapObject ingress_nap : request.getNap().getIngresses()) {
         for (NapObject eggress_nap : request.getNap().getEgresses()) {
