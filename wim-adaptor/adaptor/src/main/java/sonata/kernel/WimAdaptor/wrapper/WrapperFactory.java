@@ -26,6 +26,7 @@
 
 package sonata.kernel.WimAdaptor.wrapper;
 
+import sonata.kernel.WimAdaptor.wrapper.vlsp.VlspWimWrapper;
 import sonata.kernel.WimAdaptor.wrapper.vtn.VtnWrapper;
 
 public class WrapperFactory {
@@ -44,6 +45,8 @@ public class WrapperFactory {
       output = new VtnWrapper(config);
     } else if (config.getWimVendor().equals(WimVendor.MOCK)){
       output = new MockWrapper(config);
+    } else if (config.getWimVendor().equals(WimVendor.VLSP)){
+      output = new VlspWimWrapper(config);
     }
 
     System.out.println("  [WrapperFactory] - Wrapper created...");
