@@ -139,6 +139,8 @@ public class VlspNetworkWrapper extends NetworkWrapper {
         //Create the link between the router which represents the link ends.
         if(!(name2RouterMap.containsKey(linkEnds[0])&&name2RouterMap.containsKey(linkEnds[1]))){
           Logger.error("Cannot find the router connected to this link in the router map.");
+          Logger.error("link ends were "+linkEnds[0]+" and "+linkEnds[1]);
+          Logger.error("name2RouterMap: "+name2RouterMap.toString());
           return;
         }
         RouterData router1 = name2RouterMap.get(linkEnds[0]);

@@ -28,7 +28,7 @@ package sonata.kernel.WimAdaptor.wrapper;
 
 
 public enum WimVendor {
-  VTN("VTN"),MOCK("MOCK");
+  VTN("VTN"),MOCK("MOCK"),VLSP("vlsp");
 
   private final String name;
 
@@ -52,6 +52,6 @@ public enum WimVendor {
       }
     }
 
-    throw new IllegalArgumentException(name + " is not a valid ComputeVimVendor");
+    throw new IllegalArgumentException(name + " is not a valid WimVendor");
   }
 }
