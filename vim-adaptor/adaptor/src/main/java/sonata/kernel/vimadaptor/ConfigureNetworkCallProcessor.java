@@ -38,6 +38,8 @@ import sonata.kernel.vimadaptor.commons.nsd.ForwardingGraph;
 import sonata.kernel.vimadaptor.commons.nsd.NetworkForwardingPath;
 import sonata.kernel.vimadaptor.commons.nsd.NetworkFunction;
 import sonata.kernel.vimadaptor.commons.nsd.ServiceDescriptor;
+import sonata.kernel.vimadaptor.commons.nsd.VirtualLink;
+import sonata.kernel.vimadaptor.commons.nsd.VirtualLink.ConnectivityType;
 import sonata.kernel.vimadaptor.commons.vnfd.ConnectionPointReference;
 import sonata.kernel.vimadaptor.commons.vnfd.VnfDescriptor;
 import sonata.kernel.vimadaptor.messaging.ServicePlatformMessage;
@@ -101,6 +103,7 @@ public class ConfigureNetworkCallProcessor extends AbstractCallProcessor {
     ServiceDescriptor nsd = data.getNsd();
     ArrayList<VnfRecord> vnfrs = data.getVnfrs();
     ArrayList<VnfDescriptor> vnfds = data.getVnfds();
+    ArrayList<VirtualLink> vlinks = new ArrayList<VirtualLink>();
     Logger.info("Processing Forwarding graphs...");
     for (ForwardingGraph graph : nsd.getForwardingGraphs()) {
       for (NetworkForwardingPath path : graph.getNetworkForwardingPaths()) {
@@ -177,7 +180,50 @@ public class ConfigureNetworkCallProcessor extends AbstractCallProcessor {
             }
           }
         }
-
+        HashMap<String, ArrayList<VirtualLink>> netVim2VirtualLinksMap =
+            new HashMap<String, ArrayList<VirtualLink>>();
+        for (VirtualLink vl : nsd.getVirtualLinks()) {
+          if (vl.getConnectivityType().equals(ConnectivityType.E_LINE)) {
+            String cpr1 = vl.getConnectionPointsReference().get(0);
+            String cpr2 = vl.getConnectionPointsReference().get(1);
+            String[] split1 = cpr1.split(":");
+            String[] split2 = cpr2.split(":");
+            String vnfId1 = split1[0];
+            String vnfId2 = split2[0];
+            String vnfName1 = vnfId2NameMap.get(vnfId1);
+            String vnfName2 = vnfId2NameMap.get(vnfId2);
+            VnfDescriptor vnfd1 = vnfName2VnfdMap.get(vnfName1);
+            VnfDescriptor vnfd2 = vnfName2VnfdMap.get(vnfName2);
+            String computeVimUuid1 = WrapperBay.getInstance().getVimRepo()
+                .getComputeVimUuidByFunctionInstanceId(vnfd1.getInstanceUuid());
+            String computeVimUuid2 = WrapperBay.getInstance().getVimRepo()
+                .getComputeVimUuidByFunctionInstanceId(vnfd2.getInstanceUuid());
+            
+            if (computeVimUuid1 == null || computeVimUuid2 == null) {
+              Logger
+                  .error("Can't find Compute VIM UUID for functions in virtual link: "+ vl.getId());
+              String responseJson =
+                  "{\"request_status\":\"ERROR\",\"message\":\"Can't find Compute VIM UUID for functions in virtual link: "+ vl.getId()+"\"}";
+              this.sendToMux(new ServicePlatformMessage(responseJson, "application/json",
+                  message.getReplyTo(), message.getSid(), null));
+              return false;
+            }
+            
+            if(!computeVimUuid1.equals(computeVimUuid2)){
+              continue;
+            }
+            String netVimUuid = WrapperBay.getInstance()
+                .getNetworkVimFromComputeVimUuid(computeVimUuid1).getConfig().getUuid();
+            
+            if(netVim2VirtualLinksMap.containsKey(netVimUuid)){
+              netVim2VirtualLinksMap.get(netVimUuid).add(vl);
+            }else{
+              netVim2VirtualLinksMap.put(netVimUuid,new ArrayList<VirtualLink>());
+              netVim2VirtualLinksMap.get(netVimUuid).add(vl);
+            }
+            
+          }
+        }
 
         Logger.debug("subgraph data structure:");
         Logger.debug(netVim2SubGraphMap.toString());
@@ -185,7 +231,7 @@ public class ConfigureNetworkCallProcessor extends AbstractCallProcessor {
         for (String netVimUuid : netVim2SubGraphMap.keySet()) {
           ArrayList<VnfDescriptor> descriptorsSublist = new ArrayList<VnfDescriptor>();
           ArrayList<VnfRecord> recordsSublist = new ArrayList<VnfRecord>();
-
+          
 
           ServiceDescriptor partialNsd = new ServiceDescriptor();
           partialNsd.setConnectionPoints(nsd.getConnectionPoints());
@@ -202,13 +248,18 @@ public class ConfigureNetworkCallProcessor extends AbstractCallProcessor {
           tempGraph.add(partialGraph);
           partialNsd.setForwardingGraphs(tempGraph);
 
+
           for (ConnectionPointReference cpr : connectionPoints) {
             VnfDescriptor vnfd = cpRef2VnfdMap.get(cpr.getConnectionPointRef());
             VnfRecord vnfr = cpRef2VnfrMap.get(cpr.getConnectionPointRef());
             if (!descriptorsSublist.contains(vnfd)) descriptorsSublist.add(vnfd);
             if (!recordsSublist.contains(vnfr)) recordsSublist.add(vnfr);
           }
-
+          
+          if(netVim2VirtualLinksMap.containsKey(netVimUuid)){
+            partialNsd.setVirtualLinks(netVim2VirtualLinksMap.get(netVimUuid));
+          }
+          
           NetworkConfigurePayload wrapperPayload = new NetworkConfigurePayload();
           wrapperPayload.setNsd(partialNsd);
           wrapperPayload.setVnfds(descriptorsSublist);
