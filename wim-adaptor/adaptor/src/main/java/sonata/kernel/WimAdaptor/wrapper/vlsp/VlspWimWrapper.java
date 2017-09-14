@@ -27,6 +27,8 @@ public class VlspWimWrapper extends WimWrapper {
   public boolean configureNetwork(String instanceId, String inputSegment, String outputSegment,
       String[] segmentList) {
 
+    
+    
     Logger.debug("Configuring WAN SFC in VLSP...");
     String host = this.getConfig().getWimEndpoint();
     String config = this.getConfig().getConfiguration();
@@ -42,7 +44,7 @@ public class VlspWimWrapper extends WimWrapper {
 //    }
 //    int port = object.getInt("GC_port");
 
-    if(!(inputSegment.contains(":")&&outputSegment.contains(":"))){
+    if((inputSegment==null||outputSegment==null)||!(inputSegment.contains(":")&&outputSegment.contains(":"))){
       Logger.error(
           "VLSP WIM wrapper - Egress and Ingress NAP are not compliant with VLSP wrapper");
       return false;
