@@ -3,6 +3,8 @@ package sonata.kernel.Wimadaptor.wrapper.vlsp.client.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class AppData {
+  
+  @JsonProperty("aid")
   private int appID;
   private String appName;
   @JsonProperty("classname")
