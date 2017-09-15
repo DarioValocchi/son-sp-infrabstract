@@ -104,7 +104,7 @@ public class VlspGcClient {
     buildUrl.append(this.port);
     buildUrl.append("/router");
     buildUrl.append("/?name=" + name);
-    buildUrl.append("&address=" + address);
+    //buildUrl.append("&address=" + address);
 
     post = new HttpPost(buildUrl.toString());
 
