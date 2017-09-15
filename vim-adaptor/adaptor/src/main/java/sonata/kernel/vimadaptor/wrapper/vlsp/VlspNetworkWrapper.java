@@ -69,10 +69,11 @@ public class VlspNetworkWrapper extends NetworkWrapper {
         Logger.debug("router name:" + name);
         if (name.startsWith(vnfPrefix)) {
           name2RouterMap.put(name, router);
+        } else if(name.startsWith(data.getServiceInstanceId())){
+          name2RouterMap.put(name, router);
         }
       }
     }
-
     Logger.debug("Retrieved routers:");
     for (RouterData router : name2RouterMap.values()) {
       Logger.debug(router.getName());
@@ -126,7 +127,7 @@ public class VlspNetworkWrapper extends NetworkWrapper {
     inputLinkEnds[0]= nsd.getInstanceUuid()+"_ingress";
     outputLinkEnds[1]= nsd.getInstanceUuid()+"_egress";
     
-    Logger.debug("Processing vnf CP" +firstCpr.getConnectionPointRef());
+    Logger.debug("Processing vnf CP " +firstCpr.getConnectionPointRef());
     String[] inSplit = firstCpr.getConnectionPointRef().split(":");
     String inVnfId = inSplit[0];
     String inCpName = inSplit[1];
@@ -141,7 +142,7 @@ public class VlspNetworkWrapper extends NetworkWrapper {
     for (VnfVirtualLink vnfVl : inVnf.getVirtualLinks()) {
       if (vnfVl.getConnectionPointsReference().contains(inCpName)) {
         // This must be an E_LINE with just two CPs.
-        Logger.debug("Virtual link found:" + vnfVl.getId());
+        Logger.debug("Virtual link found: " + vnfVl.getId());
         int indexOfVnfCp = vnfVl.getConnectionPointsReference().indexOf(inCpName);
         int indexOfVduCp = (indexOfVnfCp + 1) % 2;
         String vlEnd = vnfVl.getConnectionPointsReference().get(indexOfVduCp);
