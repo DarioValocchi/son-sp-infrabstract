@@ -85,16 +85,16 @@ public class VlspWimWrapper extends WimWrapper {
         return false;
       }
       
-      String[] outArgs = new String[3];
+      String[] outArgs = new String[2];
       outArgs[0] = "4500";
       outArgs[1] = outHost+":"+outPort;
-      outArgs[2] = "-v";
+      //outArgs[2] = "-v";
       
       
-      String[] inArgs = new String[3];
+      String[] inArgs = new String[2];
       inArgs[0] = inPort;
       inArgs[1] = routerOutId+":4500";
-      inArgs[2] = "-v";
+      //inArgs[2] = "-v";
       
       
       

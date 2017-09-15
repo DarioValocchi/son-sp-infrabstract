@@ -78,7 +78,7 @@ public class VlspComputeWrapper extends ComputeWrapper {
       Logger.debug("Creating virtual node for VDU_ID " + vdu.getId());
       String name = vnfd.getName() + "_" + vdu.getId();
       Logger.debug("Virtual node name: " + name);
-      int address = new Random().nextInt();
+      int address = new Random().nextInt(10000);
       RouterData routerData;
       try {
         routerData = client.addRouter(name, address);
