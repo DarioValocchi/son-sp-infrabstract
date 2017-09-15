@@ -91,7 +91,8 @@ public class VlspNetworkWrapper extends NetworkWrapper {
     for (VnfDescriptor vnf : vnfds) {
       vnfTrio2VnfdMap.put(vnf.getVendor() + ":" + vnf.getName() + ":" + vnf.getVersion(), vnf);
     }
-
+    
+    Logger.debug("Creating input and output links");
     // Assumption: there is just one service graph/path per PoP
     if (nsd.getForwardingGraphs() == null || nsd.getForwardingGraphs().size() != 1) {
       Logger.error("VLSP Net wrapper - Forwarding graph too complex for this VIM adaptor");
@@ -227,7 +228,7 @@ public class VlspNetworkWrapper extends NetworkWrapper {
     //
     // Deploy other virtual links of the subgraph
     //
-        
+    Logger.debug("Creating other inter-vnf links");
         
     for (VirtualLink vl : nsd.getVirtualLinks()) {
       if (vl.getConnectivityType().equals(ConnectivityType.E_LAN)) {

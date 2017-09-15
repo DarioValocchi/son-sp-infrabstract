@@ -185,13 +185,13 @@ public class VlspGcClient {
 
     post = new HttpPost(buildUrl.toString());
 
-    Logger.debug("[VlspGcCLient] Creating app...");
-    Logger.debug("[VlspGcCLient] " + post.toString());
-
-    response = httpClient.execute(post);
-
-    Logger.debug("[VlspGcCLient] app creation response:");
-    Logger.debug(response.toString());
+    // Logger.debug("[VlspGcCLient] Creating app...");
+    // Logger.debug("[VlspGcCLient] " + post.toString());
+    //
+    // response = httpClient.execute(post);
+    //
+    // Logger.debug("[VlspGcCLient] app creation response:");
+    // Logger.debug(response.toString());
 
     ObjectMapper mapper = new ObjectMapper();
 
