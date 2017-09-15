@@ -175,7 +175,7 @@ public class VlspNetworkWrapper extends NetworkWrapper {
         Logger.debug("Vl end found: " + vlEnd);
         String[] split = vlEnd.split(":");
         String vduId = split[0];
-        outputLinkEnds[0] = inVnf.getName() + "_" + vduId;
+        outputLinkEnds[0] = outVnf.getName() + "_" + vduId;
       }
     }
         
