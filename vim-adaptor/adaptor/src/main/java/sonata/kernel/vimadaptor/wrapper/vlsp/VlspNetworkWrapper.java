@@ -149,14 +149,15 @@ public class VlspNetworkWrapper extends NetworkWrapper {
         Logger.debug("Vl end found: " + vlEnd);
         String[] split = vlEnd.split(":");
         String vduId = split[0];
+        Logger.debug("input link end found: " + inVnf.getName() + "_" + vduId);
         inputLinkEnds[1] = inVnf.getName() + "_" + vduId;
       }
     }
     
     Logger.debug("Processing vnf CP" +lastCpr.getConnectionPointRef());
     String[] outSplit = lastCpr.getConnectionPointRef().split(":");
-    String outVnfId = inSplit[0];
-    String outCpName = inSplit[1];
+    String outVnfId = outSplit[0];
+    String outCpName = outSplit[1];
  
     // Resolve VNF triple and vnf descriptor.
     String outVnfTrio = vnfId2vnfNameMap.get(outVnfId);
@@ -175,6 +176,7 @@ public class VlspNetworkWrapper extends NetworkWrapper {
         Logger.debug("Vl end found: " + vlEnd);
         String[] split = vlEnd.split(":");
         String vduId = split[0];
+        Logger.debug("link end found: " + outVnf.getName() + "_" + vduId);
         outputLinkEnds[0] = outVnf.getName() + "_" + vduId;
       }
     }
