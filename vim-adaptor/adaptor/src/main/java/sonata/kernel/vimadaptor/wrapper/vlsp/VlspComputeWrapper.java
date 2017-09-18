@@ -84,7 +84,7 @@ public class VlspComputeWrapper extends ComputeWrapper {
         newVimConfig.setVimVendor(config.getVimVendor());
         newVimConfig.setWrapperType(config.getWrapperType());
         newVimConfig.setConfiguration("{\"GC_port\":\"" + vim.getPort() + "\",\"slice_ctrl\":"
-            + object.getString("slice_ctrl") + "}");
+            + sliceConfig.toString() + "}");
 
         this.setConfig(newVimConfig);
 
