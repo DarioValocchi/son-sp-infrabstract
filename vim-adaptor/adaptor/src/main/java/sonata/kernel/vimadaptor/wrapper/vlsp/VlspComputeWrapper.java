@@ -12,7 +12,9 @@ import org.json.JSONTokener;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -40,14 +42,61 @@ import sonata.kernel.vimadaptor.wrapper.WrapperBay;
 import sonata.kernel.vimadaptor.wrapper.WrapperConfiguration;
 import sonata.kernel.vimadaptor.wrapper.WrapperStatusUpdate;
 import sonata.kernel.vimadaptor.wrapper.vlsp.client.VlspGcClient;
+import sonata.kernel.vimadaptor.wrapper.vlsp.client.VlspSliceClient;
 import sonata.kernel.vimadaptor.wrapper.vlsp.client.model.LinkData;
 import sonata.kernel.vimadaptor.wrapper.vlsp.client.model.RouterData;
+import sonata.kernel.vimadaptor.wrapper.vlsp.client.model.SliceCtrlResponse;
+import sonata.kernel.vimadaptor.wrapper.vlsp.client.model.SlicePayload;
+import sonata.kernel.vimadaptor.wrapper.vlsp.client.model.VimInformation;
 
 public class VlspComputeWrapper extends ComputeWrapper {
 
 
   public VlspComputeWrapper(WrapperConfiguration config) {
     super(config);
+    String host = config.getVimEndpoint();
+    String configString = config.getConfiguration();
+    JSONTokener mapper = new JSONTokener(configString);
+    JSONObject object = (JSONObject) mapper.nextValue();
+    if (object.has("slice_ctrl")) {
+      JSONObject sliceConfig = object.getJSONObject("slice_ctrl");
+      
+      String sliceCtrl = sliceConfig.getString("host");
+      int sliceCtrlPort = sliceConfig.getInt("port");
+      
+      VlspSliceClient client = new VlspSliceClient(sliceCtrl, sliceCtrlPort); 
+      
+      SliceCtrlResponse payload;
+      try {
+        payload = client.getSlice("vlsp", 1);
+      
+      
+      VimInformation vim = payload.getPayload().getVim();
+      WrapperConfiguration newVimConfig = this.getConfig();
+      
+      newVimConfig.setUuid(config.getUuid());
+      newVimConfig.setAuthKey(config.getAuthKey());
+      newVimConfig.setAuthPass(config.getAuthPass());
+      newVimConfig.setAuthUserName(config.getAuthUserName());
+      newVimConfig.setCity(config.getCity());
+      newVimConfig.setCountry(config.getCountry());
+      newVimConfig.setName(config.getName());
+      newVimConfig.setVimEndpoint(vim.getHostname());
+      newVimConfig.setVimVendor(config.getVimVendor());
+      newVimConfig.setWrapperType(config.getWrapperType());
+      newVimConfig.setConfiguration("{\"GC_port\":\""+vim.getPort()+"\",\"slice_ctrl\":"+object.getString("slice_ctrl")+"}");
+      
+      this.setConfig(newVimConfig);
+      
+      } catch (JsonParseException e) {
+        e.printStackTrace();
+      } catch (JsonMappingException e) {
+        e.printStackTrace();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+
   }
 
   private static final org.slf4j.Logger Logger = LoggerFactory.getLogger(VlspComputeWrapper.class);
@@ -250,7 +299,7 @@ public class VlspComputeWrapper extends ComputeWrapper {
         InterfaceRecord ir = new InterfaceRecord();
         String portAddress;
         if (cp.getType().equals(ConnectionPointType.MANAGEMENT)) {
-          portAddress = ""+ vduToRouterDataMap.get(vdu.getId()).getMgmtPort();
+          portAddress = "" + vduToRouterDataMap.get(vdu.getId()).getMgmtPort();
         } else {
           portAddress = vduToRouterDataMap.get(vdu.getId()).getR2rPort();
         }
