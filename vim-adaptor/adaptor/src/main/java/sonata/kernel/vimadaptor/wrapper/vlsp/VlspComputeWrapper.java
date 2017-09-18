@@ -60,34 +60,34 @@ public class VlspComputeWrapper extends ComputeWrapper {
     JSONObject object = (JSONObject) mapper.nextValue();
     if (object.has("slice_ctrl")) {
       JSONObject sliceConfig = object.getJSONObject("slice_ctrl");
-      
+
       String sliceCtrl = sliceConfig.getString("host");
       int sliceCtrlPort = sliceConfig.getInt("port");
-      
-      VlspSliceClient client = new VlspSliceClient(sliceCtrl, sliceCtrlPort); 
-      
+
+      VlspSliceClient client = new VlspSliceClient(sliceCtrl, sliceCtrlPort);
+
       SliceCtrlResponse payload;
       try {
         payload = client.getSlice("vlsp", 1);
-      
-      
-      VimInformation vim = payload.getPayload().getVim();
-      WrapperConfiguration newVimConfig = this.getConfig();
-      
-      newVimConfig.setUuid(config.getUuid());
-      newVimConfig.setAuthKey(config.getAuthKey());
-      newVimConfig.setAuthPass(config.getAuthPass());
-      newVimConfig.setAuthUserName(config.getAuthUserName());
-      newVimConfig.setCity(config.getCity());
-      newVimConfig.setCountry(config.getCountry());
-      newVimConfig.setName(config.getName());
-      newVimConfig.setVimEndpoint(vim.getHostname());
-      newVimConfig.setVimVendor(config.getVimVendor());
-      newVimConfig.setWrapperType(config.getWrapperType());
-      newVimConfig.setConfiguration("{\"GC_port\":\""+vim.getPort()+"\",\"slice_ctrl\":"+object.getString("slice_ctrl")+"}");
-      
-      this.setConfig(newVimConfig);
-      
+
+        VimInformation vim = payload.getPayload().getVim();
+        WrapperConfiguration newVimConfig = this.getConfig();
+
+        newVimConfig.setUuid(config.getUuid());
+        newVimConfig.setAuthKey(config.getAuthKey());
+        newVimConfig.setAuthPass(config.getAuthPass());
+        newVimConfig.setAuthUserName(config.getAuthUserName());
+        newVimConfig.setCity(config.getCity());
+        newVimConfig.setCountry(config.getCountry());
+        newVimConfig.setName(config.getName());
+        newVimConfig.setVimEndpoint(vim.getHostname());
+        newVimConfig.setVimVendor(config.getVimVendor());
+        newVimConfig.setWrapperType(config.getWrapperType());
+        newVimConfig.setConfiguration("{\"GC_port\":\"" + vim.getPort() + "\",\"slice_ctrl\":"
+            + object.getString("slice_ctrl") + "}");
+
+        this.setConfig(newVimConfig);
+
       } catch (JsonParseException e) {
         e.printStackTrace();
       } catch (JsonMappingException e) {

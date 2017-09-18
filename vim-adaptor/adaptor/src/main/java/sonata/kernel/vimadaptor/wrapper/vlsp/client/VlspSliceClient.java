@@ -37,7 +37,7 @@ public class VlspSliceClient {
     buildUrl.append(this.host);
     buildUrl.append(":");
     buildUrl.append(this.port);
-    buildUrl.append("/slice");
+    buildUrl.append("/slice/");
 
     String body = "{\"type\":\"" + type + "\",\"size\":\"" + size + "\"}";
 
