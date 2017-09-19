@@ -67,8 +67,11 @@ public class ListComputeVimCallProcessor extends AbstractCallProcessor {
             message.getReplyTo(), message.getSid(), null));
         return false;
       }
+      Logger.debug("Retrieved wrapper:");
+      Logger.debug(wr.getConfig().toString());
+      
       ResourceUtilisation resource = wr.getResourceUtilisation();
-
+      
       if (resource != null) {
 
         VimResources bodyElement = new VimResources();
