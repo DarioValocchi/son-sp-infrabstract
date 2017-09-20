@@ -84,6 +84,7 @@ public class ListComputeVimCallProcessor extends AbstractCallProcessor {
         bodyElement.setCoreUsed(resource.getUsedCores());
         bodyElement.setMemoryTotal(resource.getTotMemory());
         bodyElement.setMemoryUsed(resource.getUsedMemory());
+        bodyElement.setConfiguration(wr.getConfig().getConfiguration());
         resList.add(bodyElement);
       } else {
         VimResources bodyElement = new VimResources();
