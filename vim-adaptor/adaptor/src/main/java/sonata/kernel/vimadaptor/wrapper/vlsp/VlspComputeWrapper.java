@@ -83,9 +83,13 @@ public class VlspComputeWrapper extends ComputeWrapper {
         newVimConfig.setVimEndpoint(vim.getHostname());
         newVimConfig.setVimVendor(config.getVimVendor());
         newVimConfig.setWrapperType(config.getWrapperType());
+        if(object.has("SAP1")&&object.has("SAP2")){
+          newVimConfig.setConfiguration("{\"GC_port\":\"" + vim.getPort() + "\",\"slice_ctrl\":"
+              + sliceConfig.toString() + ",\"SAP1\":"+object.getInt("SAP1")+",\"SAP2\":"+object.getInt("SAP2")+"}");
+        }else{
         newVimConfig.setConfiguration("{\"GC_port\":\"" + vim.getPort() + "\",\"slice_ctrl\":"
             + sliceConfig.toString() + "}");
-
+        }
         this.setConfig(newVimConfig);
 
       } catch (JsonParseException e) {
