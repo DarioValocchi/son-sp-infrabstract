@@ -2,6 +2,7 @@ package sonata.kernel.vimadaptor.wrapper.vlsp;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Random;
@@ -43,6 +44,7 @@ import sonata.kernel.vimadaptor.wrapper.WrapperConfiguration;
 import sonata.kernel.vimadaptor.wrapper.WrapperStatusUpdate;
 import sonata.kernel.vimadaptor.wrapper.vlsp.client.VlspGcClient;
 import sonata.kernel.vimadaptor.wrapper.vlsp.client.VlspSliceClient;
+import sonata.kernel.vimadaptor.wrapper.vlsp.client.model.AppData;
 import sonata.kernel.vimadaptor.wrapper.vlsp.client.model.LinkData;
 import sonata.kernel.vimadaptor.wrapper.vlsp.client.model.RouterData;
 import sonata.kernel.vimadaptor.wrapper.vlsp.client.model.SliceCtrlResponse;
@@ -51,7 +53,8 @@ import sonata.kernel.vimadaptor.wrapper.vlsp.client.model.VimInformation;
 
 public class VlspComputeWrapper extends ComputeWrapper {
 
-
+  private static final org.slf4j.Logger Logger = LoggerFactory.getLogger(VlspComputeWrapper.class);
+  
   public VlspComputeWrapper(WrapperConfiguration config) {
     super(config);
     String host = config.getVimEndpoint();
@@ -103,7 +106,6 @@ public class VlspComputeWrapper extends ComputeWrapper {
 
   }
 
-  private static final org.slf4j.Logger Logger = LoggerFactory.getLogger(VlspComputeWrapper.class);
 
   @Override
   public void deployFunction(FunctionDeployPayload data, String sid) {
@@ -131,11 +133,19 @@ public class VlspComputeWrapper extends ComputeWrapper {
       Logger.debug("Creating virtual node for VDU_ID " + vdu.getId());
       String name = vnfd.getName() + "_" + vdu.getId();
       Logger.debug("Virtual node name: " + name);
-      int address = new Random().nextInt(1000000);
       RouterData routerData;
+      AppData appData;
+      
+      String vmImage = vdu.getVmImage(); 
+      String[] vmImageSplit = vmImage.split(" ");
+      String appClassPath = vmImageSplit[0];
+      String appArgs = vmImageSplit[1];
+      
       try {
-        routerData = client.addRouter(name, address);
+        routerData = client.addRouter(name, null);
         vduToRouterDataMap.put(vdu.getId(), routerData);
+        appData = client.deployApp(routerData.getRouterID(), appClassPath, Arrays.copyOfRange(vmImageSplit, 1, vmImageSplit.length));
+        
       } catch (ClientProtocolException e) {
         e.printStackTrace();
         Logger.error(
