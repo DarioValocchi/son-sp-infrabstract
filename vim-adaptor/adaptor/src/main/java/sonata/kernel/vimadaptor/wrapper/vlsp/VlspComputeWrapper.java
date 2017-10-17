@@ -144,7 +144,7 @@ public class VlspComputeWrapper extends ComputeWrapper {
       try {
         routerData = client.addRouter(name, null);
         vduToRouterDataMap.put(vdu.getId(), routerData);
-        appData = client.deployApp(routerData.getRouterID(), appClassPath, Arrays.copyOfRange(vmImageSplit, 1, vmImageSplit.length));
+        //appData = client.deployApp(routerData.getRouterID(), appClassPath, Arrays.copyOfRange(vmImageSplit, 1, vmImageSplit.length));
         
       } catch (ClientProtocolException e) {
         e.printStackTrace();
