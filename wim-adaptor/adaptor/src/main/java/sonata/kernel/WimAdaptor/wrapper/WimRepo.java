@@ -129,7 +129,7 @@ public class WimRepo {
       if (!isEnvironmentSet) {
         stmt = connection.createStatement();
         sql = "CREATE TABLE wim " + "(UUID TEXT PRIMARY KEY NOT NULL," + " TYPE TEXT,"+" NAME TEXT,"
-            + " VENDOR TEXT NOT NULL," + " ENDPOINT TEXT NOT NULL," + " USERNAME TEXT NOT NULL,"
+            + " VENDOR TEXT NOT NULL," + " ENDPOINT TEXT NOT NULL," + " USERNAME TEXT NOT NULL," + " CONFIGURATION TEXT"
             + " PASS TEXT," + " AUTHKEY TEXT);";
         stmt.executeUpdate(sql);
         sql = "CREATE TABLE attached_vim " + "(VIM_UUID TEXT PRIMARY KEY NOT NULL, "
@@ -193,7 +193,7 @@ public class WimRepo {
               prop.getProperty("user"), prop.getProperty("pass"));
       connection.setAutoCommit(false);
 
-      String sql = "INSERT INTO WIM (UUID, TYPE, VENDOR, ENDPOINT, USERNAME, PASS, AUTHKEY, NAME) "
+      String sql = "INSERT INTO WIM (UUID, TYPE, VENDOR, ENDPOINT, USERNAME, PASS, AUTHKEY, NAME, CONFIGURATION) "
           + "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
       stmt = connection.prepareStatement(sql);
       stmt.setString(1, uuid);
@@ -204,6 +204,7 @@ public class WimRepo {
       stmt.setString(6, record.getConfig().getAuthPass());
       stmt.setString(7, record.getConfig().getAuthKey());
       stmt.setString(8, record.getConfig().getName());
+      stmt.setString(9, record.getConfig().getConfiguration());
       stmt.executeUpdate();
       connection.commit();
       stmt.close();
@@ -303,7 +304,7 @@ public class WimRepo {
       connection.setAutoCommit(false);
 
 
-      String sql = "UPDATE WIM set (TYPE, VENDOR, ENDPOINT, USERNAME, PASS, AUTHKEY, NAME) "
+      String sql = "UPDATE WIM set (TYPE, VENDOR, ENDPOINT, USERNAME, PASS, AUTHKEY, NAME, CONFIGURATION) "
           + "VALUES (?,?,?,?,?,?,?) WHERE UUID=?;";
 
       stmt = connection.prepareStatement(sql);
@@ -314,7 +315,8 @@ public class WimRepo {
       stmt.setString(5, record.getConfig().getAuthPass());
       stmt.setString(6, record.getConfig().getAuthKey());
       stmt.setString(7, record.getConfig().getName());
-      stmt.setString(8, uuid);
+      stmt.setString(8, record.getConfig().getConfiguration());
+      stmt.setString(9, uuid);
 
 
       stmt.executeUpdate(sql);
@@ -380,6 +382,7 @@ public class WimRepo {
         String pass = rs.getString("PASS");
         String key = rs.getString("AUTHKEY");
         String name = rs.getString("NAME");
+        String configuration = rs.getString("CONFIGURATION");
 
         WrapperConfiguration config = new WrapperConfiguration();
         config.setUuid(uuid);
@@ -390,6 +393,7 @@ public class WimRepo {
         config.setAuthPass(pass);
         config.setAuthKey(key);
         config.setName(name);
+        config.setConfiguration(configuration);
 
         Wrapper wrapper = WrapperFactory.createWrapper(config);
         output = new WrapperRecord(wrapper, config);
@@ -464,6 +468,7 @@ public class WimRepo {
         String pass = rs.getString("PASS");
         String key = rs.getString("AUTHKEY");
         String name = rs.getString("NAME");
+        String configuration = rs.getString("CONFIGURATION");
 
         WrapperConfiguration config = new WrapperConfiguration();
         config.setUuid(uuid);
@@ -474,6 +479,7 @@ public class WimRepo {
         config.setAuthPass(pass);
         config.setAuthKey(key);
         config.setName(name);
+        config.setConfiguration(configuration);
 
         Wrapper wrapper = WrapperFactory.createWrapper(config);
         output = new WrapperRecord(wrapper, config);
