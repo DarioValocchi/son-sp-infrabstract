@@ -36,6 +36,7 @@ public class WimRecord {
   private String name;
   @JsonProperty("attached_vims")
   private ArrayList<String> attachedVims = new ArrayList<String>();
+  private String configuration;
   
   public String getUuid() {
     return uuid;
@@ -63,6 +64,12 @@ public class WimRecord {
         "attachedVim: "+this.attachedVims.toString();
         
     return out;
+  }
+  public String getConfiguration() {
+    return configuration;
+  }
+  public void setConfiguration(String configuration) {
+    this.configuration = configuration;
   }
   
   

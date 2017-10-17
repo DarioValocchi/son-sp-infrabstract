@@ -78,6 +78,7 @@ public class ListWimCallProcessor extends AbstractCallProcessor {
       out.setName(wr.getConfig().getName());
       ArrayList<String> attachedVims = WrapperBay.getInstance().getAttachedVims(wim);
       out.setAttachedVims(attachedVims);
+      out.setConfiguration(wr.getConfig().getConfiguration());
       wimList.add(out);
     }
 
