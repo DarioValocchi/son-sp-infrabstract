@@ -129,7 +129,7 @@ public class WimRepo {
       if (!isEnvironmentSet) {
         stmt = connection.createStatement();
         sql = "CREATE TABLE wim " + "(UUID TEXT PRIMARY KEY NOT NULL," + " TYPE TEXT,"+" NAME TEXT,"
-            + " VENDOR TEXT NOT NULL," + " ENDPOINT TEXT NOT NULL," + " USERNAME TEXT NOT NULL," + " CONFIGURATION TEXT"
+            + " VENDOR TEXT NOT NULL," + " ENDPOINT TEXT NOT NULL," + " USERNAME TEXT NOT NULL," + " CONFIGURATION TEXT,"
             + " PASS TEXT," + " AUTHKEY TEXT);";
         stmt.executeUpdate(sql);
         sql = "CREATE TABLE attached_vim " + "(VIM_UUID TEXT PRIMARY KEY NOT NULL, "
