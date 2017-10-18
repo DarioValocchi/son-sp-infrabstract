@@ -134,12 +134,12 @@ public class VlspComputeWrapper extends ComputeWrapper {
       String name = vnfd.getName() + "_" + vdu.getId();
       Logger.debug("Virtual node name: " + name);
       RouterData routerData;
-      AppData appData;
-      
-      String vmImage = vdu.getVmImage(); 
-      String[] vmImageSplit = vmImage.split(" ");
-      String appClassPath = vmImageSplit[0];
-      String appArgs = vmImageSplit[1];
+     
+      // AppData appData;
+      // String vmImage = vdu.getVmImage();
+      // String[] vmImageSplit = vmImage.split(" ");
+      // String appClassPath = vmImageSplit[0];
+      // String appArgs = vmImageSplit[1];
       
       try {
         routerData = client.addRouter(name, null);
