@@ -26,6 +26,7 @@
 
 package sonata.kernel.vimadaptor.wrapper.sp;
 
+import sonata.kernel.vimadaptor.ListComputeVimCallProcessor;
 import sonata.kernel.vimadaptor.commons.FunctionDeployPayload;
 import sonata.kernel.vimadaptor.commons.FunctionScalePayload;
 import sonata.kernel.vimadaptor.commons.ServiceDeployPayload;
@@ -42,9 +43,14 @@ import javax.ws.rs.NotAuthorizedException;
 
 import org.apache.http.client.ClientProtocolException;
 import org.jboss.resteasy.spi.UnauthorizedException;
+import org.slf4j.LoggerFactory;
+
+import com.jcraft.jsch.Logger;
 
 public class ComputeSPWrapper extends ComputeWrapper {
 
+  private static final org.slf4j.Logger Logger =
+      LoggerFactory.getLogger(ComputeSPWrapper.class);
 
   public ComputeSPWrapper(WrapperConfiguration config) {
     super(config);
@@ -155,9 +161,11 @@ public class ComputeSPWrapper extends ComputeWrapper {
   public VimResources[] listPoPs()
       throws NotAuthorizedException, ClientProtocolException, IOException {
 
+    Logger.info("[SpWrapper] Creating SONATA Rest Client");
     SonataGkClient client = new SonataGkClient(this.getConfig().getVimEndpoint(),
         this.getConfig().getAuthUserName(), this.getConfig().getAuthPass());
 
+    Logger.info("[SpWrapper] Authenticating SONATA Rest Client");
     if (!client.authenticate()) throw new NotAuthorizedException("Client cannot login to the SP");
 
     VimResources[] out = client.getPoP();

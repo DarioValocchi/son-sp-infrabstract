@@ -53,6 +53,10 @@ public class SonataGkClient {
     post = new HttpPost(buildUrl.toString());
 
     post.setEntity(new StringEntity(body, ContentType.APPLICATION_JSON));
+    Logger.debug("Authentication request:");
+
+    Logger.debug(post.toString());
+
     try{
     response = httpClient.execute(post);
 
