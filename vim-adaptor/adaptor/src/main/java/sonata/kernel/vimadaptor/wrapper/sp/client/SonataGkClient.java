@@ -35,7 +35,7 @@ public class SonataGkClient {
     this.password = password;
   }
 
-  public boolean authenticate(){
+  public boolean authenticate() {
 
     HttpClient httpClient = HttpClientBuilder.create().build();
     HttpPost post;
@@ -57,21 +57,26 @@ public class SonataGkClient {
 
     Logger.debug(post.toString());
 
-    try{
-    response = httpClient.execute(post);
+    try {
+      response = httpClient.execute(post);
 
-    String json = VlspClientUtils.convertHttpResponseToString(response);
+      String json = VlspClientUtils.convertHttpResponseToString(response);
 
-    ObjectMapper mapper = new ObjectMapper();
+      Logger.debug("Auth response: " + json);
+      ObjectMapper mapper = new ObjectMapper();
 
-    SonataAuthenticationResponse auth = mapper.readValue(json, SonataAuthenticationResponse.class);
-    this.token = auth.getToken().getToken();
+      SonataAuthenticationResponse auth =
+          mapper.readValue(json, SonataAuthenticationResponse.class);
+      this.token = auth.getToken().getToken();
 
-    if (response.getStatusLine().getStatusCode() == 200)
-      return true;
-    else
-      return false;
-    }catch (IOException e) {
+      if (response.getStatusLine().getStatusCode() == 200) {
+        Logger.debug("Client authenticated");
+        return true;
+      } else {
+        Logger.debug("Authentication failed");
+        return false;
+      }
+    } catch (IOException e) {
       return false;
     }
   }

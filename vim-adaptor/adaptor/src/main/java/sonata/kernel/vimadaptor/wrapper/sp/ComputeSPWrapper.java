@@ -168,6 +168,7 @@ public class ComputeSPWrapper extends ComputeWrapper {
     Logger.info("[SpWrapper] Authenticating SONATA Rest Client");
     if (!client.authenticate()) throw new NotAuthorizedException("Client cannot login to the SP");
 
+    Logger.info("[SpWrapper] Retrieving VIMs connected to slave SONATA SP");
     VimResources[] out = client.getPoP();
 
     return out;
