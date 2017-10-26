@@ -29,17 +29,24 @@ package sonata.kernel.vimadaptor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.apache.http.client.ClientProtocolException;
 import org.slf4j.LoggerFactory;
 
 import sonata.kernel.vimadaptor.commons.SonataManifestMapper;
 import sonata.kernel.vimadaptor.commons.VimResources;
 import sonata.kernel.vimadaptor.messaging.ServicePlatformMessage;
+import sonata.kernel.vimadaptor.wrapper.ComputeVimVendor;
 import sonata.kernel.vimadaptor.wrapper.ComputeWrapper;
 import sonata.kernel.vimadaptor.wrapper.ResourceUtilisation;
+import sonata.kernel.vimadaptor.wrapper.VimVendor;
 import sonata.kernel.vimadaptor.wrapper.WrapperBay;
+import sonata.kernel.vimadaptor.wrapper.sp.ComputeSPWrapper;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Observable;
+
+import javax.ws.rs.NotAuthorizedException;
 
 public class ListComputeVimCallProcessor extends AbstractCallProcessor {
 
@@ -69,36 +76,59 @@ public class ListComputeVimCallProcessor extends AbstractCallProcessor {
       }
       Logger.debug("Retrieved wrapper:");
       Logger.debug(wr.getConfig().toString());
-      
-      ResourceUtilisation resource = wr.getResourceUtilisation();
-      
-      if (resource != null) {
 
-        VimResources bodyElement = new VimResources();
+      if (wr.getConfig().getVimVendor().equals(ComputeVimVendor.SPVIM)) {
 
-        bodyElement.setVimUuid(vimUuid);
-        bodyElement.setVimCity(wr.getConfig().getCity());
-        bodyElement.setVimName(wr.getConfig().getName());
-        bodyElement.setVimEndpoint(wr.getConfig().getVimEndpoint());
-        bodyElement.setCoreTotal(resource.getTotCores());
-        bodyElement.setCoreUsed(resource.getUsedCores());
-        bodyElement.setMemoryTotal(resource.getTotMemory());
-        bodyElement.setMemoryUsed(resource.getUsedMemory());
-        bodyElement.setConfiguration(wr.getConfig().getConfiguration());
-        resList.add(bodyElement);
+        VimResources[] resources;
+        try {
+          resources = ((ComputeSPWrapper) wr).listPoPs();
+          for (VimResources res : resources) {
+            resList.add(res);
+          }
+        } catch (NotAuthorizedException e) {
+          Logger.error("Cannot login to one VIM");
+          this.sendToMux(new ServicePlatformMessage(
+              "{\"request_status\":\"fail\",\"message\":\"cannot login to VIM\"}",
+              "application/json", message.getReplyTo(), message.getSid(), null));
+          return false;
+        } catch (IOException e) {
+          Logger.error("Cannot retrieve information from VIM");
+          this.sendToMux(new ServicePlatformMessage(
+              "{\"request_status\":\"fail\",\"message\":\"cannot retrieve information from VIM\"}",
+              "application/json", message.getReplyTo(), message.getSid(), null));
+          e.printStackTrace();
+        }
       } else {
-        VimResources bodyElement = new VimResources();
+        ResourceUtilisation resource = wr.getResourceUtilisation();
 
-        bodyElement.setVimUuid(vimUuid);
-        bodyElement.setVimCity(wr.getConfig().getCity());
-        bodyElement.setVimName(wr.getConfig().getName());
-        bodyElement.setVimEndpoint(wr.getConfig().getVimEndpoint());
-        bodyElement.setCoreTotal(-1);
-        bodyElement.setCoreUsed(-1);
-        bodyElement.setMemoryTotal(-1);
-        bodyElement.setMemoryUsed(-1);
-        resList.add(bodyElement);
+        if (resource != null) {
 
+          VimResources bodyElement = new VimResources();
+
+          bodyElement.setVimUuid(vimUuid);
+          bodyElement.setVimCity(wr.getConfig().getCity());
+          bodyElement.setVimName(wr.getConfig().getName());
+          bodyElement.setVimEndpoint(wr.getConfig().getVimEndpoint());
+          bodyElement.setCoreTotal(resource.getTotCores());
+          bodyElement.setCoreUsed(resource.getUsedCores());
+          bodyElement.setMemoryTotal(resource.getTotMemory());
+          bodyElement.setMemoryUsed(resource.getUsedMemory());
+          bodyElement.setConfiguration(wr.getConfig().getConfiguration());
+          resList.add(bodyElement);
+        } else {
+          VimResources bodyElement = new VimResources();
+
+          bodyElement.setVimUuid(vimUuid);
+          bodyElement.setVimCity(wr.getConfig().getCity());
+          bodyElement.setVimName(wr.getConfig().getName());
+          bodyElement.setVimEndpoint(wr.getConfig().getVimEndpoint());
+          bodyElement.setCoreTotal(-1);
+          bodyElement.setCoreUsed(-1);
+          bodyElement.setMemoryTotal(-1);
+          bodyElement.setMemoryUsed(-1);
+          resList.add(bodyElement);
+
+        }
       }
     }
 
