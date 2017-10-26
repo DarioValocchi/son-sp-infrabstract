@@ -8,7 +8,7 @@ public class SonataAuthenticationResponse {
 
   private String username;
   @JsonProperty("session_began_at")
-  private Date sessionStart;
+  private String sessionStart;
 
   private SonataToken token;
 
@@ -16,7 +16,7 @@ public class SonataAuthenticationResponse {
     return username;
   }
 
-  public Date getSessionStart() {
+  public String getSessionStart() {
     return sessionStart;
   }
 
@@ -28,7 +28,7 @@ public class SonataAuthenticationResponse {
     this.username = username;
   }
 
-  public void setSessionStart(Date sessionStart) {
+  public void setSessionStart(String sessionStart) {
     this.sessionStart = sessionStart;
   }
 
