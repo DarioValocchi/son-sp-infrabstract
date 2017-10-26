@@ -77,6 +77,7 @@ public class SonataGkClient {
         return false;
       }
     } catch (IOException e) {
+      e.printStackTrace();
       return false;
     }
   }
