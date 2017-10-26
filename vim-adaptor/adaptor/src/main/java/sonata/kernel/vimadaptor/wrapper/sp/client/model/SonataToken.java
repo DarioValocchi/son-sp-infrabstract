@@ -9,10 +9,16 @@ public class SonataToken {
   @JsonProperty("token_type")
   private String type;
   @JsonProperty("not-before-policy")
-  private String policy;
+  private int policy;
   @JsonProperty("session_state")
   private String sessionState;
-
+  @JsonProperty("expires_in")
+  private int expiresIn;
+  @JsonProperty("refresh_expires_in")
+  private int refreshExpiresIn;
+  @JsonProperty("refresh_token")
+  private String refreshToken;
+  
   public String getToken() {
     return token;
   }
@@ -21,7 +27,7 @@ public class SonataToken {
     return type;
   }
 
-  public String getPolicy() {
+  public int getPolicy() {
     return policy;
   }
 
@@ -37,12 +43,36 @@ public class SonataToken {
     this.type = type;
   }
 
-  public void setPolicy(String policy) {
+  public void setSessionState(String sessionState) {
+    this.sessionState = sessionState;
+  }
+
+  public int getExpiresIn() {
+    return expiresIn;
+  }
+
+  public int getRefreshExpiresIn() {
+    return refreshExpiresIn;
+  }
+
+  public String getRefreshToken() {
+    return refreshToken;
+  }
+
+  public void setPolicy(int policy) {
     this.policy = policy;
   }
 
-  public void setSessionState(String sessionState) {
-    this.sessionState = sessionState;
+  public void setExpiresIn(int expiresIn) {
+    this.expiresIn = expiresIn;
+  }
+
+  public void setRefreshExpiresIn(int refreshExpiresIn) {
+    this.refreshExpiresIn = refreshExpiresIn;
+  }
+
+  public void setRefreshToken(String refreshToken) {
+    this.refreshToken = refreshToken;
   }
 
 }
