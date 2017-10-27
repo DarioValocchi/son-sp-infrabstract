@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import sonata.kernel.vimadaptor.commons.VimResources;
 import sonata.kernel.vimadaptor.wrapper.ResourceUtilisation;
 import sonata.kernel.vimadaptor.wrapper.sp.client.model.SonataAuthenticationResponse;
+import sonata.kernel.vimadaptor.wrapper.sp.client.model.VimRequestStatus;
 import sonata.kernel.vimadaptor.wrapper.vlsp.client.VlspClientUtils;
 
 
@@ -97,12 +98,43 @@ public class SonataGkClient {
     get.addHeader("Authorization:Bearer", this.token);
     response = httpClient.execute(get);
 
-    Logger.debug("[SONATA-GK-CLient] VIM endpoint response:");
+    Logger.debug("[SONATA-GK-CLient] VIM endpoint response (Request Object):");
     Logger.debug(response.toString());
 
     ObjectMapper mapper = new ObjectMapper();
 
     String stringResponse = VlspClientUtils.convertHttpResponseToString(response);
+
+    VimRequestStatus requestStatus = mapper.readValue(stringResponse, VimRequestStatus.class);
+
+    if (requestStatus.getStatus() != 201) {
+      throw new ClientProtocolException(
+          "GK returned wrong status upon VIM request creation: " + requestStatus.getStatus());
+    }
+    String requestUuid="";
+    try {
+      requestUuid = requestStatus.getItems().getRequestUuid();
+    } catch (NullPointerException e) {
+      throw new IOException(
+          "The GK sent back an request status with empty values or values are not parsed correctly.");
+    }
+
+    buildUrl = new StringBuilder();
+    buildUrl.append("http://");
+    buildUrl.append(this.host);
+    buildUrl.append("/api/v2/vims");
+    buildUrl.append("/" + requestUuid);
+
+    get = new HttpGet(buildUrl.toString());
+
+    get.addHeader("Authorization:Bearer", this.token);
+    response = httpClient.execute(get);
+        
+    Logger.debug("[SONATA-GK-CLient] VIM endpoint response (VIM list):");
+    Logger.debug(response.toString());
+
+    
+    stringResponse = VlspClientUtils.convertHttpResponseToString(response);
 
     VimResources[] list = mapper.readValue(stringResponse, VimResources[].class);
 
