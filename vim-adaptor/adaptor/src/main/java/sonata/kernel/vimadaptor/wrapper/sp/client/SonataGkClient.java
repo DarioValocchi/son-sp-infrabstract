@@ -104,6 +104,7 @@ public class SonataGkClient {
     ObjectMapper mapper = new ObjectMapper();
 
     String stringResponse = VlspClientUtils.convertHttpResponseToString(response);
+    Logger.debug(stringResponse);
 
     VimRequestStatus requestStatus = mapper.readValue(stringResponse, VimRequestStatus.class);
 
@@ -132,9 +133,8 @@ public class SonataGkClient {
         
     Logger.debug("[SONATA-GK-CLient] VIM endpoint response (VIM list):");
     Logger.debug(response.toString());
-
-    
     stringResponse = VlspClientUtils.convertHttpResponseToString(response);
+    Logger.debug(stringResponse);
 
     VimResources[] list = mapper.readValue(stringResponse, VimResources[].class);
 
