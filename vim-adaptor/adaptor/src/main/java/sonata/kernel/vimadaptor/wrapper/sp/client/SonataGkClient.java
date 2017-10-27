@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import sonata.kernel.vimadaptor.commons.VimResources;
-import sonata.kernel.vimadaptor.wrapper.ResourceUtilisation;
 import sonata.kernel.vimadaptor.wrapper.sp.client.model.SonataAuthenticationResponse;
 import sonata.kernel.vimadaptor.wrapper.sp.client.model.VimRequestStatus;
 import sonata.kernel.vimadaptor.wrapper.vlsp.client.VlspClientUtils;
@@ -112,31 +111,33 @@ public class SonataGkClient {
       throw new ClientProtocolException(
           "GK returned wrong status upon VIM request creation: " + requestStatus.getStatus());
     }
-    String requestUuid="";
+    String requestUuid = "";
     try {
       requestUuid = requestStatus.getItems().getRequestUuid();
     } catch (NullPointerException e) {
       throw new IOException(
           "The GK sent back an request status with empty values or values are not parsed correctly.");
     }
+    VimResources[] list;
+    do {
+      buildUrl = new StringBuilder();
+      buildUrl.append("http://");
+      buildUrl.append(this.host);
+      buildUrl.append("/api/v2/vims");
+      buildUrl.append("/" + requestUuid);
 
-    buildUrl = new StringBuilder();
-    buildUrl.append("http://");
-    buildUrl.append(this.host);
-    buildUrl.append("/api/v2/vims");
-    buildUrl.append("/" + requestUuid);
+      get = new HttpGet(buildUrl.toString());
 
-    get = new HttpGet(buildUrl.toString());
+      get.addHeader("Authorization:Bearer", this.token);
+      response = httpClient.execute(get);
 
-    get.addHeader("Authorization:Bearer", this.token);
-    response = httpClient.execute(get);
-        
-    Logger.debug("[SONATA-GK-CLient] VIM endpoint response (VIM list):");
-    Logger.debug(response.toString());
-    stringResponse = VlspClientUtils.convertHttpResponseToString(response);
-    Logger.debug(stringResponse);
+      Logger.debug("[SONATA-GK-CLient] VIM endpoint response (VIM list):");
+      Logger.debug(response.toString());
+      stringResponse = VlspClientUtils.convertHttpResponseToString(response);
+      Logger.debug(stringResponse);
 
-    VimResources[] list = mapper.readValue(stringResponse, VimResources[].class);
+      list = mapper.readValue(stringResponse, VimResources[].class);
+    } while (list.length == 0);
 
     return list;
 

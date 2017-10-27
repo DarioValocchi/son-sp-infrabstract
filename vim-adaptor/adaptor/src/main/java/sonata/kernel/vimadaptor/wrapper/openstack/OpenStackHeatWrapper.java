@@ -222,7 +222,8 @@ public class OpenStackHeatWrapper extends ComputeWrapper {
     }
     int counter = 0;
     int wait = 1000;
-    int maxCounter = 10;
+    int maxCounter = 50;
+    int maxWait = 10000;
     String status = null;
     while ((status == null || !status.equals("UPDATE_COMPLETE") || !status.equals("UPDATE_FAILED"))
         && counter < maxCounter) {
@@ -237,7 +238,7 @@ public class OpenStackHeatWrapper extends ComputeWrapper {
         Logger.error(e.getMessage(), e);
       }
       counter++;
-      wait *= 2;
+      wait =Math.min(wait*2, maxWait);
 
     }
 
