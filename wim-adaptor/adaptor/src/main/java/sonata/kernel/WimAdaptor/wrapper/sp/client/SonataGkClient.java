@@ -120,6 +120,12 @@ public class SonataGkClient {
     }
     WimRecord[] list;
     do {
+      try {
+        Thread.sleep(1000);
+      } catch (InterruptedException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
       buildUrl = new StringBuilder();
       buildUrl.append("http://");
       buildUrl.append(this.host);
@@ -137,7 +143,7 @@ public class SonataGkClient {
       Logger.debug(stringResponse);
 
       list = mapper.readValue(stringResponse, WimRecord[].class);
-    } while (list.length == 0);
+    } while (stringResponse.equals("{}"));
 
     return list;
 
