@@ -26,9 +26,12 @@
 
 package sonata.kernel.WimAdaptor;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Observable;
 
+import org.apache.http.client.ClientProtocolException;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -37,15 +40,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import sonata.kernel.WimAdaptor.commons.SonataManifestMapper;
 import sonata.kernel.WimAdaptor.commons.WimRecord;
 import sonata.kernel.WimAdaptor.messaging.ServicePlatformMessage;
+import sonata.kernel.WimAdaptor.wrapper.WimVendor;
 import sonata.kernel.WimAdaptor.wrapper.WrapperBay;
 import sonata.kernel.WimAdaptor.wrapper.WrapperRecord;
+import sonata.kernel.WimAdaptor.wrapper.sp.SPWimWrapper;
 
 public class ListWimCallProcessor extends AbstractCallProcessor {
 
   private static final org.slf4j.Logger Logger =
       LoggerFactory.getLogger(ListWimCallProcessor.class);
 
-  
+
   public ListWimCallProcessor(ServicePlatformMessage message, String sid, WimAdaptorMux mux) {
     super(message, sid, mux);
   }
@@ -65,21 +70,46 @@ public class ListWimCallProcessor extends AbstractCallProcessor {
 
     Logger.debug(wimsUuid.toString());
 
-    for(String wim : wimsUuid){
+    for (String wim : wimsUuid) {
       WrapperRecord wr = WrapperBay.getInstance().getWimRecordFromWimUuid(wim);
-     
-      if(wr==null){
-        this.sendToMux(new ServicePlatformMessage("{\"request_status\":\"ERROR\"}", "application/json", message.getReplyTo(), message.getSid(), null));
+
+      if (wr == null) {
+        this.sendToMux(new ServicePlatformMessage("{\"request_status\":\"ERROR\"}",
+            "application/json", message.getReplyTo(), message.getSid(), null));
         return false;
       }
-      WimRecord out = new WimRecord();
-      //Logger.debug(wr.toString());
-      out.setUuid(wr.getConfig().getUuid());
-      out.setName(wr.getConfig().getName());
-      ArrayList<String> attachedVims = WrapperBay.getInstance().getAttachedVims(wim);
-      out.setAttachedVims(attachedVims);
-      out.setConfiguration(wr.getConfig().getConfiguration());
-      wimList.add(out);
+      if (wr.getConfig().getWimVendor().equals(WimVendor.SPWIM)) {
+        WimRecord[] lowerWims;
+        try {
+          lowerWims = ((SPWimWrapper)wr.getWimWrapper()).getWims();
+          wimList.addAll(new ArrayList<>(Arrays.asList(lowerWims)));
+        } catch (ClientProtocolException e) {
+          Logger.error("Client protocol error while getting WIM list from lower level SP.");
+          ServicePlatformMessage response =
+              new ServicePlatformMessage("{\"status\":\"ERROR\",\"message\":\"Client error while getting WIM list from lower SP\"}",
+                  "application/json", this.getMessage().getReplyTo(), this.getSid(), null);
+          this.getMux().enqueue(response);
+          e.printStackTrace();
+          return false;
+        } catch (IOException e) {
+          Logger.error("Connection error while getting WIM list from lower level SP.");
+          ServicePlatformMessage response =
+              new ServicePlatformMessage("{\"status\":\"ERROR\",\"message\":\"I/O error while getting WIM list from lower SP\"}",
+                  "application/json", this.getMessage().getReplyTo(), this.getSid(), null);
+          this.getMux().enqueue(response);
+          e.printStackTrace();
+          return false;
+        }
+      } else {
+        WimRecord out = new WimRecord();
+        // Logger.debug(wr.toString());
+        out.setUuid(wr.getConfig().getUuid());
+        out.setName(wr.getConfig().getName());
+        ArrayList<String> attachedVims = WrapperBay.getInstance().getAttachedVims(wim);
+        out.setAttachedVims(attachedVims);
+        out.setConfiguration(wr.getConfig().getConfiguration());
+        wimList.add(out);
+      }
     }
 
     ObjectMapper mapper = SonataManifestMapper.getSonataMapper();

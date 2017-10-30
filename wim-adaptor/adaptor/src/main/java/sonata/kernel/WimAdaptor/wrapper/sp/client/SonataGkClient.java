@@ -1,4 +1,4 @@
-package sonata.kernel.vimadaptor.wrapper.sp.client;
+package sonata.kernel.WimAdaptor.wrapper.sp.client;
 
 import java.io.IOException;
 
@@ -14,10 +14,10 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import sonata.kernel.vimadaptor.commons.VimResources;
-import sonata.kernel.vimadaptor.wrapper.sp.client.model.SonataAuthenticationResponse;
-import sonata.kernel.vimadaptor.wrapper.sp.client.model.VimRequestStatus;
-import sonata.kernel.vimadaptor.wrapper.vlsp.client.VlspClientUtils;
+import sonata.kernel.WimAdaptor.commons.WimRecord;
+import sonata.kernel.WimAdaptor.wrapper.sp.client.model.SonataAuthenticationResponse;
+import sonata.kernel.WimAdaptor.wrapper.sp.client.model.VimRequestStatus;
+import sonata.kernel.Wimadaptor.wrapper.vlsp.client.VlspClientUtils;
 
 
 public class SonataGkClient {
@@ -82,7 +82,7 @@ public class SonataGkClient {
     }
   }
 
-  public VimResources[] getVims() throws ClientProtocolException, IOException {
+    public WimRecord[] getWims() throws ClientProtocolException, IOException {
     HttpClient httpClient = HttpClientBuilder.create().build();
     HttpGet get;
     HttpResponse response = null;
@@ -90,14 +90,14 @@ public class SonataGkClient {
     StringBuilder buildUrl = new StringBuilder();
     buildUrl.append("http://");
     buildUrl.append(this.host);
-    buildUrl.append("/api/v2/vims");
+    buildUrl.append("/api/v2/wims");
 
     get = new HttpGet(buildUrl.toString());
 
     get.addHeader("Authorization:Bearer", this.token);
     response = httpClient.execute(get);
 
-    Logger.debug("[SONATA-GK-CLient] /vim endpoint response (Request Object):");
+    Logger.debug("[SONATA-GK-CLient] /wim endpoint response (Request Object):");
     Logger.debug(response.toString());
 
     ObjectMapper mapper = new ObjectMapper();
@@ -118,12 +118,12 @@ public class SonataGkClient {
       throw new IOException(
           "The GK sent back an request status with empty values or values are not parsed correctly.");
     }
-    VimResources[] list;
+    WimRecord[] list;
     do {
       buildUrl = new StringBuilder();
       buildUrl.append("http://");
       buildUrl.append(this.host);
-      buildUrl.append("/api/v2/vims");
+      buildUrl.append("/api/v2/wims");
       buildUrl.append("/" + requestUuid);
 
       get = new HttpGet(buildUrl.toString());
@@ -131,16 +131,15 @@ public class SonataGkClient {
       get.addHeader("Authorization:Bearer", this.token);
       response = httpClient.execute(get);
 
-      Logger.debug("[SONATA-GK-CLient] /vim endpoint response (VIM list):");
+      Logger.debug("[SONATA-GK-CLient] /wim endpoint response (WIM list):");
       Logger.debug(response.toString());
       stringResponse = VlspClientUtils.convertHttpResponseToString(response);
       Logger.debug(stringResponse);
 
-      list = mapper.readValue(stringResponse, VimResources[].class);
+      list = mapper.readValue(stringResponse, WimRecord[].class);
     } while (list.length == 0);
 
     return list;
 
   }
-  
 }

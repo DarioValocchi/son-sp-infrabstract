@@ -26,7 +26,6 @@
 
 package sonata.kernel.vimadaptor.wrapper.sp;
 
-import sonata.kernel.vimadaptor.ListComputeVimCallProcessor;
 import sonata.kernel.vimadaptor.commons.FunctionDeployPayload;
 import sonata.kernel.vimadaptor.commons.FunctionScalePayload;
 import sonata.kernel.vimadaptor.commons.ServiceDeployPayload;
@@ -42,10 +41,8 @@ import java.io.IOException;
 import javax.ws.rs.NotAuthorizedException;
 
 import org.apache.http.client.ClientProtocolException;
-import org.jboss.resteasy.spi.UnauthorizedException;
 import org.slf4j.LoggerFactory;
 
-import com.jcraft.jsch.Logger;
 
 public class ComputeSPWrapper extends ComputeWrapper {
 
@@ -169,7 +166,7 @@ public class ComputeSPWrapper extends ComputeWrapper {
     if (!client.authenticate()) throw new NotAuthorizedException("Client cannot login to the SP");
 
     Logger.info("[SpWrapper] Retrieving VIMs connected to slave SONATA SP");
-    VimResources[] out = client.getPoP();
+    VimResources[] out = client.getVims();
 
     return out;
   }
