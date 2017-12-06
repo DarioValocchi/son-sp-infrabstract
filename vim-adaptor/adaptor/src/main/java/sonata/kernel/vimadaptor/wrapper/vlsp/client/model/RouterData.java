@@ -108,6 +108,14 @@ public class RouterData {
     this.links = links;
   }
 
+  public int[] getLinkDetail() {
+    return linkDetail;
+  }
+
+  public void setLinkDetail(int[] linkDetail) {
+    this.linkDetail = linkDetail;
+  }
+
 
 
 }
