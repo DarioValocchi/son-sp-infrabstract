@@ -18,6 +18,7 @@ public class RouterData {
   private Boolean success;
   @JsonProperty("op_time")
   private long opTime;
+  private int[] linkDetail;
   
   public int getRouterID() {
     return routerID;
