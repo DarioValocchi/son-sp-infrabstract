@@ -140,19 +140,19 @@ public class VlspComputeWrapper extends ComputeWrapper {
       AppRequestData appData;
       String vmImage = vdu.getVmImage();
       String appClassPath = null;
-      String[] vmImageSplit = null;
+      String[] args = null;
       if (vmImage.contains(" ")) {
-        vmImageSplit = vmImage.split("\\s");
+        String[] vmImageSplit = vmImage.split("\\s");
         appClassPath = vmImageSplit[0];
-      }else{
+        args = Arrays.copyOfRange(vmImageSplit, 1, vmImageSplit.length);
+      } else {
         appClassPath = vmImage;
       }
-      
+
       try {
         routerData = client.addRouter(name, null);
         vduToRouterDataMap.put(vdu.getId(), routerData);
-        appData = client.deployApp(routerData.getRouterID(), appClassPath,
-            Arrays.copyOfRange(vmImageSplit, 1, vmImageSplit.length));
+        appData = client.deployApp(routerData.getRouterID(), appClassPath, args);
 
       } catch (ClientProtocolException e) {
         e.printStackTrace();
