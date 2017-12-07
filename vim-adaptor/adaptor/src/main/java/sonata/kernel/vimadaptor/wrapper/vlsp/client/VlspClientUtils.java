@@ -32,7 +32,7 @@ public class VlspClientUtils {
         while ((line = reader.readLine()) != null) {
           sb.append(line);
         }
-        //Logger.debug("Response: " + sb.toString());
+        Logger.debug("Response: " + sb.toString());
         return sb.toString();
       } else {
         return null;
@@ -45,7 +45,7 @@ public class VlspClientUtils {
     } else if (status == 409) {
       throw new IOException("conflict detected: " + reasonPhrase);
     } else {
-      throw new IOException("Failed Request: " + reasonPhrase + " - Status "+status);
+      throw new IOException("Failed Request: " + reasonPhrase + " - Status " + status);
     }
   }
   

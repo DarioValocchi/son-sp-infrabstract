@@ -13,7 +13,7 @@ public class VlspClientUtils {
 
   private static final org.slf4j.Logger Logger = LoggerFactory.getLogger(VlspClientUtils.class);
 
-  
+
   public static String convertHttpResponseToString(HttpResponse response) throws IOException {
 
     int status = response.getStatusLine().getStatusCode();
@@ -43,10 +43,10 @@ public class VlspClientUtils {
       throw new IOException(
           "Access forbidden, make sure you are using the correct credentials: " + reasonPhrase);
     } else if (status == 409) {
-      throw new IOException("Stack is already created, conflict detected: " + reasonPhrase);
+      throw new IOException("conflict detected: " + reasonPhrase);
     } else {
-      throw new IOException("Failed Request: " + reasonPhrase);
+      throw new IOException("Failed Request: " + reasonPhrase + " - Status " + status);
     }
   }
-  
+
 }
