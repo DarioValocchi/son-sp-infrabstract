@@ -18,7 +18,7 @@ public class RouterData {
   private Boolean success;
   @JsonProperty("op_time")
   private long opTime;
-  private int[] linkDetail;
+  private LinkDetail[] linkDetail;
   
   public int getRouterID() {
     return routerID;
@@ -108,11 +108,11 @@ public class RouterData {
     this.links = links;
   }
 
-  public int[] getLinkDetail() {
+  public LinkDetail[] getLinkDetail() {
     return linkDetail;
   }
 
-  public void setLinkDetail(int[] linkDetail) {
+  public void setLinkDetail(LinkDetail[] linkDetail) {
     this.linkDetail = linkDetail;
   }
 
