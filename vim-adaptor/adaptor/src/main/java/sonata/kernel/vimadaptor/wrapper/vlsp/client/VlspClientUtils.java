@@ -45,7 +45,7 @@ public class VlspClientUtils {
     } else if (status == 409) {
       throw new IOException("conflict detected: " + reasonPhrase);
     } else {
-      throw new IOException("Failed Request: " + reasonPhrase);
+      throw new IOException("Failed Request: " + reasonPhrase + " - Status "+status);
     }
   }
   

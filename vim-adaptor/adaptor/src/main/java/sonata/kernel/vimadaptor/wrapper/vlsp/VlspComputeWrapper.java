@@ -152,8 +152,6 @@ public class VlspComputeWrapper extends ComputeWrapper {
       try {
         routerData = client.addRouter(name, null);
         vduToRouterDataMap.put(vdu.getId(), routerData);
-        appData = client.deployApp(routerData.getRouterID(), appClassPath, args);
-
       } catch (ClientProtocolException e) {
         e.printStackTrace();
         Logger.error(
@@ -171,6 +169,28 @@ public class VlspComputeWrapper extends ComputeWrapper {
         this.notifyObservers(errorUpdate);
         return;
       }
+
+      try {
+        Logger.debug("Deploying app on top of virtual router: "+appClassPath);
+        appData = client.deployApp(routerData.getRouterID(), appClassPath, args);
+      } catch (ClientProtocolException e) {
+        e.printStackTrace();
+        Logger.error(
+            "VLSP wrapper - Exception rised by REST client for protocol error while deploying app.");
+        this.setChanged();
+        WrapperStatusUpdate errorUpdate = new WrapperStatusUpdate(sid, "ERROR", e.getMessage());
+        this.notifyObservers(errorUpdate);
+        return;
+      } catch (IOException e) {
+        e.printStackTrace();
+        Logger.error(
+            "VLSP wrapper - Exception rised by REST client for I/O error while deloying app.");
+        this.setChanged();
+        WrapperStatusUpdate errorUpdate = new WrapperStatusUpdate(sid, "ERROR", e.getMessage());
+        this.notifyObservers(errorUpdate);
+        return;
+      }
+
     }
     Logger.debug("DONE");
     Logger.debug("Creating virtual links...");
