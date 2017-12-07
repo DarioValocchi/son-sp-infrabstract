@@ -1,8 +1,6 @@
 package sonata.kernel.vimadaptor.wrapper.vlsp.client;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -14,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import sonata.kernel.vimadaptor.wrapper.vlsp.client.model.AppData;
+import sonata.kernel.vimadaptor.wrapper.vlsp.client.model.AppRequestData;
 import sonata.kernel.vimadaptor.wrapper.vlsp.client.model.LinkData;
 import sonata.kernel.vimadaptor.wrapper.vlsp.client.model.RouterData;
 import sonata.kernel.vimadaptor.wrapper.vlsp.client.model.RouterList;
@@ -31,7 +29,7 @@ public class VlspGcClient {
     this.port = port;
   }
 
-  public RouterData getRouter(int id) throws ClientProtocolException, IOException{
+  public RouterData getRouter(int id) throws ClientProtocolException, IOException {
     HttpClient httpClient = HttpClientBuilder.create().build();
     HttpGet get;
     HttpResponse response = null;
@@ -42,10 +40,10 @@ public class VlspGcClient {
     buildUrl.append(":");
     buildUrl.append(this.port);
     buildUrl.append("/router");
-    buildUrl.append("/"+id);
+    buildUrl.append("/" + id);
 
     get = new HttpGet(buildUrl.toString());
-    
+
     response = httpClient.execute(get);
 
     // Logger.debug("[VlspGcCLient] Router list response:");
@@ -54,14 +52,14 @@ public class VlspGcClient {
     ObjectMapper mapper = new ObjectMapper();
 
 
-    RouterData router=
+    RouterData router =
         mapper.readValue(VlspClientUtils.convertHttpResponseToString(response), RouterData.class);
-    
+
     return router;
 
   }
-  
-  public int[] listRouters() throws ClientProtocolException, IOException{
+
+  public int[] listRouters() throws ClientProtocolException, IOException {
     HttpClient httpClient = HttpClientBuilder.create().build();
     HttpGet get;
     HttpResponse response = null;
@@ -74,7 +72,7 @@ public class VlspGcClient {
     buildUrl.append("/router/");
 
     get = new HttpGet(buildUrl.toString());
-    
+
     response = httpClient.execute(get);
 
     // Logger.debug("[VlspGcCLient] Router list response:");
@@ -83,13 +81,13 @@ public class VlspGcClient {
     ObjectMapper mapper = new ObjectMapper();
 
 
-    RouterList routers=
+    RouterList routers =
         mapper.readValue(VlspClientUtils.convertHttpResponseToString(response), RouterList.class);
-        
+
     return routers.getList();
-    
+
   }
-  
+
   public RouterData addRouter(String name, Integer address)
       throws ClientProtocolException, IOException {
 
@@ -104,7 +102,7 @@ public class VlspGcClient {
     buildUrl.append(this.port);
     buildUrl.append("/router");
     buildUrl.append("/?name=" + name);
-    //buildUrl.append("&address=" + address);
+    // buildUrl.append("&address=" + address);
 
     post = new HttpPost(buildUrl.toString());
 
@@ -162,7 +160,7 @@ public class VlspGcClient {
   }
 
 
-  public AppData deployApp(Integer routerId, String appClassPath, String[] args)
+  public AppRequestData deployApp(Integer routerId, String appClassPath, String[] args)
       throws ClientProtocolException, IOException {
 
     HttpClient httpClient = HttpClientBuilder.create().build();
@@ -179,26 +177,28 @@ public class VlspGcClient {
     buildUrl.append("/app");
     buildUrl.append("/?className=" + appClassPath);
     buildUrl.append("&args=");
-    for (int i = 0; i < args.length - 1; i++)
-      buildUrl.append(args[i] + "%20");
-    buildUrl.append(args[args.length - 1]);
-
+    if (args != null) {
+      for (int i = 0; i < args.length - 1; i++)
+        buildUrl.append(args[i] + "+");
+      buildUrl.append(args[args.length - 1]);
+    }
     post = new HttpPost(buildUrl.toString());
 
-    // Logger.debug("[VlspGcCLient] Creating app...");
-    // Logger.debug("[VlspGcCLient] " + post.toString());
-    //
-    // response = httpClient.execute(post);
-    //
-    // Logger.debug("[VlspGcCLient] app creation response:");
-    // Logger.debug(response.toString());
+    Logger.debug("[VlspGcCLient] Creating link...");
+    Logger.debug("[VlspGcCLient] " + post.toString());
+
+    response = httpClient.execute(post);
+
+    Logger.debug("[VlspGcCLient] Link creation response:");
+    Logger.debug(response.toString());
 
     ObjectMapper mapper = new ObjectMapper();
 
-    AppData output =
-        mapper.readValue(VlspClientUtils.convertHttpResponseToString(response), AppData.class);
+    AppRequestData output = mapper.readValue(VlspClientUtils.convertHttpResponseToString(response),
+        AppRequestData.class);
     return output;
   }
+
 
 
 

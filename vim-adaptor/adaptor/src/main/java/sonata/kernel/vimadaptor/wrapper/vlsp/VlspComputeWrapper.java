@@ -44,7 +44,8 @@ import sonata.kernel.vimadaptor.wrapper.WrapperConfiguration;
 import sonata.kernel.vimadaptor.wrapper.WrapperStatusUpdate;
 import sonata.kernel.vimadaptor.wrapper.vlsp.client.VlspGcClient;
 import sonata.kernel.vimadaptor.wrapper.vlsp.client.VlspSliceClient;
-import sonata.kernel.vimadaptor.wrapper.vlsp.client.model.AppData;
+import sonata.kernel.vimadaptor.wrapper.vlsp.client.model.AppRequestData;
+import sonata.kernel.vimadaptor.wrapper.vlsp.client.model.AppRequestData;
 import sonata.kernel.vimadaptor.wrapper.vlsp.client.model.LinkData;
 import sonata.kernel.vimadaptor.wrapper.vlsp.client.model.RouterData;
 import sonata.kernel.vimadaptor.wrapper.vlsp.client.model.SliceCtrlResponse;
@@ -54,7 +55,7 @@ import sonata.kernel.vimadaptor.wrapper.vlsp.client.model.VimInformation;
 public class VlspComputeWrapper extends ComputeWrapper {
 
   private static final org.slf4j.Logger Logger = LoggerFactory.getLogger(VlspComputeWrapper.class);
-  
+
   public VlspComputeWrapper(WrapperConfiguration config) {
     super(config);
     String host = config.getVimEndpoint();
@@ -86,12 +87,13 @@ public class VlspComputeWrapper extends ComputeWrapper {
         newVimConfig.setVimEndpoint(vim.getHostname());
         newVimConfig.setVimVendor(config.getVimVendor());
         newVimConfig.setWrapperType(config.getWrapperType());
-        if(object.has("SAP1")&&object.has("SAP2")){
+        if (object.has("SAP1") && object.has("SAP2")) {
           newVimConfig.setConfiguration("{\"GC_port\":\"" + vim.getPort() + "\",\"slice_ctrl\":"
-              + sliceConfig.toString() + ",\"SAP1\":"+object.getInt("SAP1")+",\"SAP2\":"+object.getInt("SAP2")+"}");
-        }else{
-        newVimConfig.setConfiguration("{\"GC_port\":\"" + vim.getPort() + "\",\"slice_ctrl\":"
-            + sliceConfig.toString() + "}");
+              + sliceConfig.toString() + ",\"SAP1\":" + object.getInt("SAP1") + ",\"SAP2\":"
+              + object.getInt("SAP2") + "}");
+        } else {
+          newVimConfig.setConfiguration("{\"GC_port\":\"" + vim.getPort() + "\",\"slice_ctrl\":"
+              + sliceConfig.toString() + "}");
         }
         this.setConfig(newVimConfig);
 
@@ -134,18 +136,24 @@ public class VlspComputeWrapper extends ComputeWrapper {
       String name = vnfd.getName() + "_" + vdu.getId();
       Logger.debug("Virtual node name: " + name);
       RouterData routerData;
-     
-      // AppData appData;
-      // String vmImage = vdu.getVmImage();
-      // String[] vmImageSplit = vmImage.split(" ");
-      // String appClassPath = vmImageSplit[0];
-      // String appArgs = vmImageSplit[1];
+
+      AppRequestData appData;
+      String vmImage = vdu.getVmImage();
+      String appClassPath = null;
+      String[] vmImageSplit = null;
+      if (vmImage.contains(" ")) {
+        vmImageSplit = vmImage.split("\\s");
+        appClassPath = vmImageSplit[0];
+      }else{
+        appClassPath = vmImage;
+      }
       
       try {
         routerData = client.addRouter(name, null);
         vduToRouterDataMap.put(vdu.getId(), routerData);
-        //appData = client.deployApp(routerData.getRouterID(), appClassPath, Arrays.copyOfRange(vmImageSplit, 1, vmImageSplit.length));
-        
+        appData = client.deployApp(routerData.getRouterID(), appClassPath,
+            Arrays.copyOfRange(vmImageSplit, 1, vmImageSplit.length));
+
       } catch (ClientProtocolException e) {
         e.printStackTrace();
         Logger.error(
