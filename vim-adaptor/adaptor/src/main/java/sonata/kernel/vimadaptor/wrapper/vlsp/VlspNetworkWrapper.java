@@ -69,7 +69,7 @@ public class VlspNetworkWrapper extends NetworkWrapper {
         Logger.debug("router name:" + name);
         if (name.startsWith(vnfPrefix)) {
           name2RouterMap.put(name, router);
-        } else if(name.startsWith(data.getServiceInstanceId())){
+        } else if (name.startsWith(data.getServiceInstanceId())) {
           name2RouterMap.put(name, router);
         }
       }
@@ -92,7 +92,7 @@ public class VlspNetworkWrapper extends NetworkWrapper {
     for (VnfDescriptor vnf : vnfds) {
       vnfTrio2VnfdMap.put(vnf.getVendor() + ":" + vnf.getName() + ":" + vnf.getVersion(), vnf);
     }
-    
+
     Logger.debug("Creating input and output links");
     // Assumption: there is just one service graph/path per PoP
     if (nsd.getForwardingGraphs() == null || nsd.getForwardingGraphs().size() != 1) {
@@ -104,7 +104,8 @@ public class VlspNetworkWrapper extends NetworkWrapper {
       return;
     }
     ForwardingGraph graph = nsd.getForwardingGraphs().get(0);
-    if(graph.getNetworkForwardingPaths()==null || graph.getNetworkForwardingPaths().size()!=1){
+    if (graph.getNetworkForwardingPaths() == null
+        || graph.getNetworkForwardingPaths().size() != 1) {
       Logger.error("VLSP Net wrapper - Forwarding graph too complex for this VIM adaptor");
       this.setChanged();
       WrapperStatusUpdate errorUpdate = new WrapperStatusUpdate(null, "ERROR",
@@ -112,30 +113,31 @@ public class VlspNetworkWrapper extends NetworkWrapper {
       this.notifyObservers(errorUpdate);
       return;
     }
-    
-    
-    // 
+
+
+    //
     // Resolving ingress and egress point of this subgraph
-    // 
-    
+    //
+
     NetworkForwardingPath path = graph.getNetworkForwardingPaths().get(0);
     ArrayList<ConnectionPointReference> cprs = path.getConnectionPoints();
     ConnectionPointReference firstCpr = cprs.get(0);
-    ConnectionPointReference lastCpr = cprs.get(cprs.size()-1);
+    ConnectionPointReference lastCpr = cprs.get(cprs.size() - 1);
     String[] inputLinkEnds = new String[2];
     String[] outputLinkEnds = new String[2];
-    inputLinkEnds[0]= nsd.getInstanceUuid()+"_ingress";
-    outputLinkEnds[1]= nsd.getInstanceUuid()+"_egress";
-    
-    Logger.debug("Processing vnf CP " +firstCpr.getConnectionPointRef());
+    inputLinkEnds[0] = nsd.getInstanceUuid() + "_ingress";
+    outputLinkEnds[1] = nsd.getInstanceUuid() + "_egress";
+
+    Logger.debug("Processing vnf CP " + firstCpr.getConnectionPointRef());
     String[] inSplit = firstCpr.getConnectionPointRef().split(":");
     String inVnfId = inSplit[0];
     String inCpName = inSplit[1];
- 
+
     // Resolve VNF triple and vnf descriptor.
     String inVnfTrio = vnfId2vnfNameMap.get(inVnfId);
     if (inVnfTrio == null) {
-      Logger.error("Unable to map the vnfId in the cpRef to a proper VNF: " + firstCpr.getConnectionPointRef());
+      Logger.error("Unable to map the vnfId in the cpRef to a proper VNF: "
+          + firstCpr.getConnectionPointRef());
       return;
     }
     VnfDescriptor inVnf = vnfTrio2VnfdMap.get(inVnfTrio);
@@ -153,16 +155,17 @@ public class VlspNetworkWrapper extends NetworkWrapper {
         inputLinkEnds[1] = inVnf.getName() + "_" + vduId;
       }
     }
-    
-    Logger.debug("Processing vnf CP" +lastCpr.getConnectionPointRef());
+
+    Logger.debug("Processing vnf CP" + lastCpr.getConnectionPointRef());
     String[] outSplit = lastCpr.getConnectionPointRef().split(":");
     String outVnfId = outSplit[0];
     String outCpName = outSplit[1];
- 
+
     // Resolve VNF triple and vnf descriptor.
     String outVnfTrio = vnfId2vnfNameMap.get(outVnfId);
     if (outVnfTrio == null) {
-      Logger.error("Unable to map the vnfId in the cpRef to a proper VNF: " + lastCpr.getConnectionPointRef());
+      Logger.error("Unable to map the vnfId in the cpRef to a proper VNF: "
+          + lastCpr.getConnectionPointRef());
       return;
     }
     VnfDescriptor outVnf = vnfTrio2VnfdMap.get(outVnfTrio);
@@ -180,9 +183,10 @@ public class VlspNetworkWrapper extends NetworkWrapper {
         outputLinkEnds[0] = outVnf.getName() + "_" + vduId;
       }
     }
-        
-    
-    if (!(name2RouterMap.containsKey(inputLinkEnds[0]) && name2RouterMap.containsKey(inputLinkEnds[1]))) {
+
+
+    if (!(name2RouterMap.containsKey(inputLinkEnds[0])
+        && name2RouterMap.containsKey(inputLinkEnds[1]))) {
       Logger.error("Cannot find the router connected to this link in the router map.");
       Logger.error("link ends were " + inputLinkEnds[0] + " and " + inputLinkEnds[1]);
       Logger.error("name2RouterMap: " + name2RouterMap.toString());
@@ -204,8 +208,9 @@ public class VlspNetworkWrapper extends NetworkWrapper {
           "VLSP wrapper - Exception rised by REST client for I/O error while creating link.");
       return;
     }
-    
-    if (!(name2RouterMap.containsKey(outputLinkEnds[0]) && name2RouterMap.containsKey(outputLinkEnds[1]))) {
+
+    if (!(name2RouterMap.containsKey(outputLinkEnds[0])
+        && name2RouterMap.containsKey(outputLinkEnds[1]))) {
       Logger.error("Cannot find the router connected to this link in the router map.");
       Logger.error("link ends were " + outputLinkEnds[0] + " and " + outputLinkEnds[1]);
       Logger.error("name2RouterMap: " + name2RouterMap.toString());
@@ -227,75 +232,80 @@ public class VlspNetworkWrapper extends NetworkWrapper {
           "VLSP wrapper - Exception rised by REST client for I/O error while creating link.");
       return;
     }
-    
+
     //
     // Deploy other virtual links of the subgraph
     //
     Logger.debug("Creating other inter-vnf links");
-        
-    for (VirtualLink vl : nsd.getVirtualLinks()) {
-      if (vl.getConnectivityType().equals(ConnectivityType.E_LAN)) {
-        // TODO
-      } else if (vl.getConnectivityType().equals(ConnectivityType.E_LINE)) {
+    if (nsd.getVirtualLinks() == null) {
+      Logger.debug("No inter-vnf links to enforce. All Done");
+      return;
+    } else {
+      for (VirtualLink vl : nsd.getVirtualLinks()) {
+        if (vl.getConnectivityType().equals(ConnectivityType.E_LAN)) {
+          // TODO
+        } else if (vl.getConnectivityType().equals(ConnectivityType.E_LINE)) {
 
-        String[] linkEnds = new String[2];
+          String[] linkEnds = new String[2];
 
 
-        int i = 0;
-        for (String cpRef : vl.getConnectionPointsReference()) {
-          // Process the cp reference
-          Logger.debug("Processing vnf CP" + cpRef);
-          String[] split = cpRef.split(":");
-          String vnfId = split[0];
-          String cpName = split[1];
+          int i = 0;
+          for (String cpRef : vl.getConnectionPointsReference()) {
+            // Process the cp reference
+            Logger.debug("Processing vnf CP" + cpRef);
+            String[] split = cpRef.split(":");
+            String vnfId = split[0];
+            String cpName = split[1];
 
-          // Resolve VNF triple and vnf descriptor.
-          String vnfTrio = vnfId2vnfNameMap.get(vnfId);
-          if (vnfTrio == null) {
-            Logger.error("Unable to map the vnfId in the cpRef to a proper VNF: " + cpRef);
-            return;
-          }
-          VnfDescriptor vnf = vnfTrio2VnfdMap.get(vnfTrio);
-          // find VL connecting VNF_CP
-          for (VnfVirtualLink vnfVl : vnf.getVirtualLinks()) {
-            if (vnfVl.getConnectionPointsReference().contains(cpName)) {
-              // This must be an E_LINE with just two CPs.
-              Logger.debug("Virtual link found:" + vnfVl.getId());
-              int indexOfVnfCp = vnfVl.getConnectionPointsReference().indexOf(cpName);
-              int indexOfVduCp = (indexOfVnfCp + 1) % 2;
-              String vlEnd = vnfVl.getConnectionPointsReference().get(indexOfVduCp);
-              Logger.debug("Vl end found: " + vlEnd);
-              split = vlEnd.split(":");
-              String vduId = split[0];
-              linkEnds[i] = vnf.getName() + "_" + vduId;
-              i++;
-              break;
+            // Resolve VNF triple and vnf descriptor.
+            String vnfTrio = vnfId2vnfNameMap.get(vnfId);
+            if (vnfTrio == null) {
+              Logger.error("Unable to map the vnfId in the cpRef to a proper VNF: " + cpRef);
+              return;
+            }
+            VnfDescriptor vnf = vnfTrio2VnfdMap.get(vnfTrio);
+            // find VL connecting VNF_CP
+            for (VnfVirtualLink vnfVl : vnf.getVirtualLinks()) {
+              if (vnfVl.getConnectionPointsReference().contains(cpName)) {
+                // This must be an E_LINE with just two CPs.
+                Logger.debug("Virtual link found:" + vnfVl.getId());
+                int indexOfVnfCp = vnfVl.getConnectionPointsReference().indexOf(cpName);
+                int indexOfVduCp = (indexOfVnfCp + 1) % 2;
+                String vlEnd = vnfVl.getConnectionPointsReference().get(indexOfVduCp);
+                Logger.debug("Vl end found: " + vlEnd);
+                split = vlEnd.split(":");
+                String vduId = split[0];
+                linkEnds[i] = vnf.getName() + "_" + vduId;
+                i++;
+                break;
+              }
             }
           }
-        }
 
-        // Create the link between the router which represents the link ends.
-        if (!(name2RouterMap.containsKey(linkEnds[0]) && name2RouterMap.containsKey(linkEnds[1]))) {
-          Logger.error("Cannot find the router connected to this link in the router map.");
-          Logger.error("link ends were " + linkEnds[0] + " and " + linkEnds[1]);
-          Logger.error("name2RouterMap: " + name2RouterMap.toString());
-          return;
-        }
-        router1 = name2RouterMap.get(linkEnds[0]);
-        router2 = name2RouterMap.get(linkEnds[1]);
-        try {
-          LinkData vlspLink =
-              client.addLink(router1.getRouterID(), router2.getRouterID(), null, vl.getId());
-        } catch (ClientProtocolException e) {
-          e.printStackTrace();
-          Logger.error(
-              "VLSP wrapper - Exception rised by REST client for protocol error while creating link.");
-          return;
-        } catch (IOException e) {
-          e.printStackTrace();
-          Logger.error(
-              "VLSP wrapper - Exception rised by REST client for I/O error while creating link.");
-          return;
+          // Create the link between the router which represents the link ends.
+          if (!(name2RouterMap.containsKey(linkEnds[0])
+              && name2RouterMap.containsKey(linkEnds[1]))) {
+            Logger.error("Cannot find the router connected to this link in the router map.");
+            Logger.error("link ends were " + linkEnds[0] + " and " + linkEnds[1]);
+            Logger.error("name2RouterMap: " + name2RouterMap.toString());
+            return;
+          }
+          router1 = name2RouterMap.get(linkEnds[0]);
+          router2 = name2RouterMap.get(linkEnds[1]);
+          try {
+            LinkData vlspLink =
+                client.addLink(router1.getRouterID(), router2.getRouterID(), null, vl.getId());
+          } catch (ClientProtocolException e) {
+            e.printStackTrace();
+            Logger.error(
+                "VLSP wrapper - Exception rised by REST client for protocol error while creating link.");
+            return;
+          } catch (IOException e) {
+            e.printStackTrace();
+            Logger.error(
+                "VLSP wrapper - Exception rised by REST client for I/O error while creating link.");
+            return;
+          }
         }
       }
     }
